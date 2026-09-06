@@ -166,8 +166,9 @@ parts of the surrounding work are commercial.
 
 The format is open to any implementer, and the intention is to steward it with
 practitioners from across the agent quality field, not from a single company.
-SuperQode and SuperOptiX already emit records, and a tool may equally consume
-them without producing any.
+[SuperQode](https://superqode.dev) and [SuperOptiX](https://superoptix.ai)
+already emit records, and a tool may equally consume them without producing
+any.
 
 [`ADOPTERS.md`](ADOPTERS.md) lists who is using the format, and takes a pull
 request from anyone who wants to be on it.

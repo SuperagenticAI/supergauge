@@ -12,10 +12,10 @@ anyone. See [`GOVERNANCE.md`](GOVERNANCE.md) for how that works.
 
 ## Tools
 
-| Tool | Maintainer | Role | Level | Notes |
-|---|---|---|---|---|
-| [SuperQode](https://github.com/SuperagenticAI/superqode) | Superagentic AI | Emits, checks | L2 | Coding-agent harnesses. `sq gauge run`, `gate`, `show`, `verify` |
-| [SuperOptiX](https://github.com/SuperagenticAI/superoptix) | Superagentic AI | Emits | L1 | Agents across eight runtimes. `super agent evaluate --gauge-out` |
+| Tool | Maintainer | Role | Level | Source | Scope |
+|---|---|---|---|---|---|
+| [SuperQode](https://superqode.dev) | Superagentic AI | Emits, checks | L2 | [GitHub](https://github.com/SuperagenticAI/superqode) | Coding-agent harnesses. `sq gauge run`, `gate`, `show`, `verify` |
+| [SuperOptiX](https://superoptix.ai) | Superagentic AI | Emits | L1 | [GitHub](https://github.com/SuperagenticAI/superoptix) | Agents across eight runtimes. `super agent evaluate --gauge-out` |
 
 ## Organisations
 
@@ -27,9 +27,9 @@ _None listed yet. Open a pull request to be the first._
 
 Open a pull request against this file with one row.
 
-**Tools** need a link, the maintainer, whether the tool emits records, consumes
-them, or both, and the highest conformance level it reaches. Run the suite
-before claiming a level:
+**Tools** need a website, a source link, the maintainer, whether the tool emits
+records, consumes them, or both, and the highest conformance level it reaches.
+Run the suite before claiming a level:
 
 ```bash
 python conformance/check.py your-record.yaml
