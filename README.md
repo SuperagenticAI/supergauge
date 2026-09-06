@@ -1,14 +1,49 @@
-# SuperGauge
+<p align="center">
+  <img src="logo.png" alt="SuperGauge" width="150">
+</p>
 
-**An open format for the agent release record.**
+<h1 align="center">SuperGauge</h1>
 
-Your evaluation passed. Your agent shipped. Something went wrong in production.
-What document do you hand the person asking what was checked before release?
+<p align="center">
+  <strong>The Agent Quality Record Protocol</strong><br>
+  An open format for the decision to release an agent.
+</p>
 
-SuperGauge defines that document: the **Agent Quality Record**. One file,
-emitted when somebody decides an agent may ship, stating what was measured,
-against what, which rules had to hold, whether they held, who decided, and how
-to get back.
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/code-Apache--2.0-blue.svg" alt="Apache 2.0"></a>
+  <a href="LICENSE-SPEC"><img src="https://img.shields.io/badge/spec-CC%20BY%204.0-lightgrey.svg" alt="CC BY 4.0"></a>
+  <img src="https://img.shields.io/badge/version-0.1.0--draft-orange.svg" alt="0.1.0-draft">
+</p>
+
+---
+
+## The problem
+
+An agent mishandles a customer. Someone asks what was checked before it went
+live, and the answer has to be assembled from chat logs and recollection.
+
+Agents fail differently from software. One succeeds four times in five, takes a
+different route on every run, and reports its own work as finished. The failures
+teams describe are consistent:
+
+| | |
+|---|---|
+| **The agent reports success** | The work never happened |
+| **It picks the wrong tool** | Or calls the right one five times |
+| **It answers confidently** | With nothing behind it |
+| **It worked in the demo** | It has not worked since |
+| **The bill went up** | Nobody can say what it bought |
+| **Nothing stands before release** | Readiness is a judgement made under deadline |
+
+Every one of these is measurable. What has been missing is somewhere to write
+the measurements down at the moment a release is decided.
+
+## The record
+
+SuperGauge specifies one artifact: the **Agent Quality Record**. A single
+document, written when somebody decides an agent may ship, stating what was
+measured, what it was measured against, which conditions had to hold, whether
+they held, who accepted the result, and which version to revert to.
 
 ```yaml
 supergauge: "0.1"
@@ -22,8 +57,8 @@ subject:
 task_set: {manifest_digest: sha256:7d02..., held_out: 12, sealed: true}
 
 measures:
-  - {id: task.completion,          value: 0.83, split: held-out, n: 12}
-  - {id: reliability.pass_hat_k,   value: 0.66, k: 5}
+  - {id: task.completion,             value: 0.83, split: held-out, n: 12}
+  - {id: reliability.pass_hat_k,      value: 0.66, k: 5}
   - {id: safety.injection_resistance, value: 1.00, pack: sg/injection@0.1}
 
 gates:
@@ -36,29 +71,28 @@ decision:
   rolls_back_to: sha256:2f7a...
 ```
 
-Read [`SPEC.md`](SPEC.md).
+Read [`SPEC.md`](SPEC.md) for the full format.
 
-## Why this and not another scorecard
+## Where it sits
 
-The evaluation layer is crowded and good. Platforms grade runs. The Agent
-Control Specification bounds behaviour at runtime. Google's agent quality
-flywheel closes the development inner loop and says outer-loop release decisions
-are future work. The Evaluation Context Protocol lists signed reports and sealed
-held-out manifests as work it has not done.
+The evaluation layer is well served. Platforms grade runs. The Agent Control
+Specification bounds behaviour at runtime. Published quality frameworks close
+the development loop and state that automated release decisions remain outside
+their scope. The Evaluation Context Protocol lists signed reports and sealed
+held-out manifests among the work it has not done.
 
 Everyone measures. Nobody writes down the decision.
 
-That gap is where this sits. SuperGauge composes with all of the above, and an
-implementation already exporting OpenTelemetry can emit a valid record without
-changing runtimes.
+SuperGauge composes with those layers, and a system already exporting
+OpenTelemetry traces can produce a valid record without changing runtimes.
 
 ## Four design decisions
 
-**Results are reported as a profile.** Gates resolve to pass or fail. Every other
-measure is reported with its own tolerance, and the format offers nowhere to put
-an aggregate. Collapsing twenty measures into one figure discards the detail
-the record exists to preserve, and it invites teams to optimise the headline
-while the behaviour drifts.
+**Results are reported as a profile.** Gates resolve to pass or fail. Every
+other measure carries its own tolerance, and the format offers nowhere to put an
+aggregate. Collapsing twenty measures into a single figure discards the detail
+the record exists to preserve, and invites teams to optimise a headline while
+the behaviour drifts.
 
 **Thresholds belong to profiles.** The specification defines how each measure is
 computed and leaves the acceptable value to a profile, which has to show the
@@ -69,47 +103,80 @@ can defend.
 **Only deterministic measures block a release.** A model judge varies between
 runs and can be influenced by the system it grades, so its output is recorded
 against the release and reserved from the decision. Two conformant
-implementations given the same evidence have to produce the same gate result.
+implementations given the same evidence produce the same gate result.
 
 **Conformance is self-asserted and third-party verifiable.** An implementer
 states the level they meet, and the published suite lets anyone reproduce the
 claim. The burden of proof stays on the implementation, which is what an
 endorsement would quietly remove.
 
-## Layout
+## Conformance
 
+| Level | Reached when |
+|---|---|
+| **L1** | Schema-valid, carrying genuine digests and a recorded authority grant |
+| **L2** | Deterministic gates enforced, held-out split sealed and fingerprinted, contamination probes present |
+| **L3** | Reliability reported across repeated runs, judge version pinned, evaluator independence asserted |
+| **L4** | Signed, and reproducible from the referenced ledger by an independent third party |
+
+```bash
+pip install pyyaml jsonschema
+python conformance/check.py record.yaml --level L2
 ```
-SPEC.md          the record, the ship rule, tiers, conformance
-schema/          JSON Schema for validators
-measures/        the open registry — the main place to contribute
-profiles/        domain bundles that set tiers and floors
-packs/           adversarial and fault-injection case sets
-conformance/     the L1–L4 suite
-rfcs/            proposals
-```
+
+## Implementations
+
+| Tool | Scope |
+|---|---|
+| [SuperQode](https://github.com/SuperagenticAI/superqode) | Coding-agent harnesses. `sq gauge run`, `gate`, `show`, `verify` |
+| [SuperOptiX](https://github.com/SuperagenticAI/superoptix) | Agents across eight runtimes. `super agent evaluate --gauge-out` |
+
+An implementation of this specification is not required to be either of them,
+and nothing in the format depends on them.
+
+## Repository layout
+
+| Path | Contents |
+|---|---|
+| [`SPEC.md`](SPEC.md) | The record, the release rule, tiers, conformance levels |
+| [`schema/`](schema) | JSON Schema for validators |
+| [`measures/`](measures) | The open registry, and the main place to contribute |
+| [`profiles/`](profiles) | Domain bundles that set tiers and thresholds |
+| [`packs/`](packs) | Adversarial and fault-injection case sets |
+| [`conformance/`](conformance) | The L1 to L4 suite |
+| [`rfcs/`](rfcs) | Proposals |
 
 ## Contributing
 
-The core is held tightly; the registry is open. Proposing a measure is the
-main way in, and two accepted proposals earns a review seat.
+The specification is governed narrowly and the registry is open. The range of
+behaviour worth measuring exceeds any single team's experience, and the
+practitioners who know what a sound test looks like are frequently not the
+people who write specifications.
 
-Start from [`measures/reliability.pass_hat_k.md`](measures/reliability.pass_hat_k.md),
-which is the reference for the detail expected, and
-[`rfcs/0000-template.md`](rfcs/0000-template.md).
+Proposing a measure is the main way in, and two accepted proposals earn a place
+on the review rotation.
 
-DCO sign-off (`git commit -s`), no CLA — you keep your copyright and you do not
-need your employer's legal team to approve a measure definition.
+Two files are worth reading first. The measure definition for
+[`reliability.pass_hat_k`](measures/reliability.pass_hat_k.md) sets the level of
+detail a proposal needs, and the [RFC template](rfcs/0000-template.md) carries
+the review checklist a submission is assessed against.
 
-[`GOVERNANCE.md`](GOVERNANCE.md) states who approves what, and says plainly
-which parts of the surrounding work are commercial.
+Contributions are made under a Developer Certificate of Origin sign-off
+(`git commit -s`) in place of a contributor licence agreement. Authors retain
+copyright, so a measure definition needs no approval from an employer's legal
+team.
+
+[`GOVERNANCE.md`](GOVERNANCE.md) records who approves what, and states which
+parts of the surrounding work are commercial.
 
 ## Status
 
-`0.1.0-draft`. Unstable — it may change incompatibly before `1.0.0`. Measure
-ids, once published, are permanent regardless of version.
+Version 0.1.0-draft. The specification may change incompatibly before 1.0.0.
+Measure identifiers, once published, are permanent regardless of version.
 
 ## Licence
 
-Specification text CC BY 4.0. Schemas, packs and conformance suite Apache-2.0.
+Specification text under [CC BY 4.0](LICENSE-SPEC). Schemas, packs and the
+conformance suite under [Apache 2.0](LICENSE).
 
-Maintained by [Superagentic AI](https://super-agentic.ai).
+Maintained by [Superagentic AI](https://super-agentic.ai/super-gauge).
