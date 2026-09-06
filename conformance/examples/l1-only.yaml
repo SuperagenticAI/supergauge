@@ -1,0 +1,38 @@
+# Structurally valid, but claims nothing verifiable: unsealed split, no probes,
+# a model-graded measure used as a gate, and a ship verdict over a failing gate.
+supergauge: "0.1"
+record_id: aqr_weak_example
+emitted_at: 2026-09-06T09:00:00Z
+
+profile: {id: sg/coding-agent, version: "0.1", tier: T1}
+
+subject:
+  agent: demo-agent
+  harness_digest: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  authority:
+    acs_policy_version: "1.0"
+    egress: unrestricted
+
+task_set:
+  manifest_digest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+  held_in: 20
+  sealed: false
+
+measures:
+  - {id: task.completion, value: 0.71}
+  - {id: answer.grounded, value: 0.88}
+
+gates:
+  - {id: answer.grounded, floor: 0.8, result: pass}
+  - {id: task.completion, floor: 0.8, result: fail}
+
+assurance:
+  evidence:
+    ledger: ./logs
+    format: opentelemetry/1.0
+    replayable: false
+  evaluator_independent: false
+
+decision:
+  verdict: ship
+  actor: "someone@example.com"

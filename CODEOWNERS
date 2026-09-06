@@ -1,0 +1,14 @@
+# Two reviewers for the specification and the schemas, one of whom is
+# independent of the change. One measure-group reviewer for the registry.
+# See GOVERNANCE.md.
+
+/SPEC.md          @SuperagenticAI/supergauge-core
+/schema/          @SuperagenticAI/supergauge-core
+/conformance/     @SuperagenticAI/supergauge-core
+/GOVERNANCE.md    @SuperagenticAI/supergauge-core
+/CODEOWNERS       @SuperagenticAI/supergauge-core
+
+/measures/        @SuperagenticAI/supergauge-measures
+/profiles/        @SuperagenticAI/supergauge-measures
+/packs/           @SuperagenticAI/supergauge-measures
+/rfcs/            @SuperagenticAI/supergauge-measures
