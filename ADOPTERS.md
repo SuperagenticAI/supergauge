@@ -6,6 +6,10 @@ A specification with one implementation is a proposal. This list exists so that
 anyone considering the format can see who else has committed to it, and at which
 conformance level.
 
+The format is stewarded openly. Maintainers are drawn from practitioners working
+on agent quality, and the registry, profiles and packs take contributions from
+anyone. See [`GOVERNANCE.md`](GOVERNANCE.md) for how that works.
+
 ## Tools
 
 | Tool | Maintainer | Role | Level | Notes |

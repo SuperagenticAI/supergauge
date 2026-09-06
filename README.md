@@ -164,18 +164,12 @@ parts of the surrounding work are commercial.
 
 ## Adoption
 
-Superagentic AI maintains the specification and has adopted it in two of its own
-tools, which is where the format was first exercised.
+The format is open to any implementer, and the intention is to steward it with
+practitioners from across the agent quality field, not from a single company.
+SuperQode and SuperOptiX already emit records, and a tool may equally consume
+them without producing any.
 
-| Tool | Role | Level |
-|---|---|---|
-| [SuperQode](https://github.com/SuperagenticAI/superqode) | Emits and checks records for coding-agent harnesses | L2 |
-| [SuperOptiX](https://github.com/SuperagenticAI/superoptix) | Emits records for agents across eight runtimes | L1 |
-
-Neither is required. The format is a published specification and any tool may
-implement it, including one that reads records without producing them.
-
-[`ADOPTERS.md`](ADOPTERS.md) lists everyone using the format, and takes a pull
+[`ADOPTERS.md`](ADOPTERS.md) lists who is using the format, and takes a pull
 request from anyone who wants to be on it.
 
 ## Status
