@@ -6,7 +6,8 @@
 
 <p align="center">
   <strong>The Agent Quality Record Protocol</strong><br>
-  An open format for the decision to release an agent.
+  An open format for recording whether an agent is ready to ship:<br>
+  what was measured, which conditions had to hold, and who signed off.
 </p>
 
 <p align="center">
@@ -35,8 +36,9 @@ teams describe are consistent:
 | **The bill went up** | Nobody can say what it bought |
 | **Nothing stands before release** | Readiness is a judgement made under deadline |
 
-Every one of these is measurable. What has been missing is somewhere to write
-the measurements down at the moment a release is decided.
+Every one of these is measurable. Readiness is a decision a team makes, and
+SuperGauge is the format that decision is written in, so anyone can check the
+measurements later.
 
 ## The record
 
@@ -124,16 +126,6 @@ pip install pyyaml jsonschema
 python conformance/check.py record.yaml --level L2
 ```
 
-## Implementations
-
-| Tool | Scope |
-|---|---|
-| [SuperQode](https://github.com/SuperagenticAI/superqode) | Coding-agent harnesses. `sq gauge run`, `gate`, `show`, `verify` |
-| [SuperOptiX](https://github.com/SuperagenticAI/superoptix) | Agents across eight runtimes. `super agent evaluate --gauge-out` |
-
-An implementation of this specification is not required to be either of them,
-and nothing in the format depends on them.
-
 ## Repository layout
 
 | Path | Contents |
@@ -145,6 +137,7 @@ and nothing in the format depends on them.
 | [`packs/`](packs) | Adversarial and fault-injection case sets |
 | [`conformance/`](conformance) | The L1 to L4 suite |
 | [`rfcs/`](rfcs) | Proposals |
+| [`ADOPTERS.md`](ADOPTERS.md) | Who is using the format |
 
 ## Contributing
 
@@ -168,6 +161,22 @@ team.
 
 [`GOVERNANCE.md`](GOVERNANCE.md) records who approves what, and states which
 parts of the surrounding work are commercial.
+
+## Adoption
+
+Superagentic AI maintains the specification and has adopted it in two of its own
+tools, which is where the format was first exercised.
+
+| Tool | Role | Level |
+|---|---|---|
+| [SuperQode](https://github.com/SuperagenticAI/superqode) | Emits and checks records for coding-agent harnesses | L2 |
+| [SuperOptiX](https://github.com/SuperagenticAI/superoptix) | Emits records for agents across eight runtimes | L1 |
+
+Neither is required. The format is a published specification and any tool may
+implement it, including one that reads records without producing them.
+
+[`ADOPTERS.md`](ADOPTERS.md) lists everyone using the format, and takes a pull
+request from anyone who wants to be on it.
 
 ## Status
 
