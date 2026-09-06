@@ -173,6 +173,20 @@ any.
 [`ADOPTERS.md`](ADOPTERS.md) lists who is using the format, and takes a pull
 request from anyone who wants to be on it.
 
+### An open invitation
+
+A record format earns its value from how many tools speak it. Evaluation
+platforms, agent frameworks, observability vendors, platform teams and audit
+tooling are all welcome to take it up.
+
+Three ways in. **Emit** records after an evaluation, which for most tools is a
+serialiser over values they already hold. **Consume** records other tools
+produce. **Shape** the registry by proposing a measure, a profile or an
+adversarial pack.
+
+Adoption carries no obligation, and a level you claim is one anyone can
+reproduce from a record you publish.
+
 ## Status
 
 Version 0.1.0-draft. The specification may change incompatibly before 1.0.0.
