@@ -32,7 +32,7 @@ what a good test looks like are mostly not the people who write specifications.
 ## Becoming a reviewer
 
 Two accepted measure or pack RFCs earns a seat on the measure-group review
-rotation. That seat carries real authority over `measures/`, `profiles/` and
+rotation. That seat carries binding authority over `measures/`, `profiles/` and
 `packs/`: your approval merges a change.
 
 Core reviewers are appointed, and the current list is in `CODEOWNERS`.

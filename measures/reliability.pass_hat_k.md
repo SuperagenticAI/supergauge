@@ -44,7 +44,8 @@ meaningless and MUST be rejected by a validator.
 
 `pass^k` composes over whatever success condition the task declares — most
 usefully `task.completion`, which asserts against the end state of the world
-rather than the agent's description of it. It does not define its own.
+in place of the agent's description of it. It defines no success condition of
+its own.
 
 ### Independence
 

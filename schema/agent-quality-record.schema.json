@@ -37,7 +37,7 @@
     },
 
     "profile": {
-      "description": "Which rules governed this release. The profile is the only thing entitled to state which gates are mandatory and what they must clear.",
+      "description": "The bar this release was held to. The profile is the only thing entitled to state which gates are mandatory and what they must clear.",
       "type": "object",
       "required": ["id", "version", "tier"],
       "additionalProperties": false,

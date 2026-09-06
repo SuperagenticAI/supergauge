@@ -48,20 +48,33 @@ held-out manifests as work it has not done.
 
 Everyone measures. Nobody writes down the decision.
 
-That gap is where this sits. SuperGauge composes with all of the above rather
-than replacing any of them — an implementation already exporting OpenTelemetry
-can emit a valid record without changing runtimes.
+That gap is where this sits. SuperGauge composes with all of the above, and an
+implementation already exporting OpenTelemetry can emit a valid record without
+changing runtimes.
 
-## What it refuses to do
+## Four design decisions
 
-- **No single quality score.** Gates pass or fail; everything else is a profile
-  with a tolerance. Averaging destroys the information the record exists to carry.
-- **No floors in the core.** The specification defines measures and never
-  asserts a threshold. Floors live in profiles and must be evidence-backed.
-- **No judged gate.** A model judge is a directional signal. Only deterministic
-  measures may block a release.
-- **No certification.** Conformance is self-asserted across four levels and
-  independently verifiable. Nobody issues a badge.
+**Results are reported as a profile.** Gates resolve to pass or fail. Every other
+measure is reported with its own tolerance, and the format offers nowhere to put
+an aggregate. Collapsing twenty measures into one figure discards the detail
+the record exists to preserve, and it invites teams to optimise the headline
+while the behaviour drifts.
+
+**Thresholds belong to profiles.** The specification defines how each measure is
+computed and leaves the acceptable value to a profile, which has to show the
+evidence behind it. A figure with reasoning attached survives scrutiny; a round
+number chosen for how it looks becomes a target everyone conforms to and nobody
+can defend.
+
+**Only deterministic measures block a release.** A model judge varies between
+runs and can be influenced by the system it grades, so its output is recorded
+against the release and reserved from the decision. Two conformant
+implementations given the same evidence have to produce the same gate result.
+
+**Conformance is self-asserted and third-party verifiable.** An implementer
+states the level they meet, and the published suite lets anyone reproduce the
+claim. The burden of proof stays on the implementation, which is what an
+endorsement would quietly remove.
 
 ## Layout
 

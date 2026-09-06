@@ -15,8 +15,8 @@ One paragraph. What is being added, and to which surface.
 
 ## Problem
 
-What goes unrecorded or unverifiable today. Prefer a failure you have actually
-seen to one you can imagine. If you have a measured rate or a public incident,
+What goes unrecorded or unverifiable today. Prefer a failure you have seen in
+production to one you can imagine. If you have a measured rate or a public incident,
 cite it here.
 
 ## Proposal
@@ -64,7 +64,7 @@ prior art, say where and why.
 
 ## Open questions
 
-Anything you want reviewers to decide rather than rubber-stamp.
+Anything you want reviewers to decide for themselves.
 
 ---
 

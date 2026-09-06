@@ -2,7 +2,8 @@
 
 **An open format for the agent release record.**
 
-Version `0.1.0-draft` · Status: **Draft, unstable** · Licence: CC BY 4.0 (this text), Apache-2.0 (schemas and conformance suite)
+Version `0.1.0-draft` · Status: **Draft, unstable** · Licence: CC BY 4.0 (this
+text), Apache-2.0 (schemas and conformance suite)
 
 ---
 
@@ -20,21 +21,23 @@ platforms score runs. Control specifications bound behaviour at runtime.
 Neither produces the document an auditor asks for, a platform team argues over,
 or a rollback points back to.
 
-### 1.1 Non-goals
+### 1.1 Scope
 
-SuperGauge is deliberately not:
+The format covers one moment: the release decision. Everything that produces the
+inputs to that decision belongs to a neighbouring layer, and the record points at
+those layers instead of absorbing them.
 
-- **An evaluation platform.** It does not run agents or grade them. It records
-  what a grader found.
-- **A benchmark or task corpus.** Task sets are the implementer's; the record
-  pins their digest, not their content.
-- **An observability backend.** It references an evidence ledger. It does not
-  store one.
-- **A runtime control system.** Enforcement belongs to a policy engine. The
-  record carries that engine's decisions.
-- **A certification programme.** Conformance is self-asserted and independently
-  verifiable. No authority issues a badge.
-- **A single quality score.** See §4.2.
+| Concern | Where it belongs | What the record holds |
+|---|---|---|
+| Running and grading an agent | An evaluation platform | The values a grader returned |
+| Task content | The implementer's own corpus | A manifest digest |
+| Trace and event storage | An observability backend | A reference to the ledger |
+| Runtime enforcement | A policy engine, such as ACS | The decisions that engine returned |
+| Assurance that a claim is true | A third party replaying the ledger | A signature and a replay pointer |
+
+Two consequences worth stating plainly. Conformance is self-asserted, so §5
+describes what an implementer claims and how anyone else reproduces it. And the
+record has nowhere to put an aggregate score, which is deliberate; see §4.2.
 
 ### 1.2 Relationship to adjacent work
 
@@ -48,10 +51,11 @@ SuperGauge is designed to sit above these, not to replace any of them.
 | Inner-loop grading | Google's agent quality flywheel | The flywheel produces the measurements. The record captures the release decision the flywheel does not make |
 | Where to fix | HarnessX D1–D9 | Orthogonal. SuperGauge measures say *how good*; D1–D9 says *where to change it*. A record may carry a D-tag as advisory |
 
-Three positions this specification shares with the wider field rather than
-claiming as its own: the party proposing a change must not grade it; a model
+Three positions this specification shares with the wider field, and claims no
+credit for: the party proposing a change must not grade it; a model
 judge is a directional signal and not an oracle; anything checkable
-deterministically should be checked deterministically rather than judged.
+deterministically should be checked deterministically, leaving the judge for
+what resists it.
 
 ---
 
@@ -66,7 +70,7 @@ supergauge: "0.1"                 # spec version this record conforms to
 record_id: aqr_01J9F3QK7B2N       # unique, opaque
 emitted_at: 2026-09-06T11:04:22Z  # RFC 3339, UTC
 
-profile:   { ... }   # §2.2 — which rules governed this
+profile:   { ... }   # §2.2 — the bar this release was held to
 subject:   { ... }   # §2.3 — what was measured
 task_set:  { ... }   # §2.4 — what it was measured against
 measures:  [ ... ]   # §2.5 — how it performed
@@ -76,7 +80,7 @@ decision:  { ... }   # §2.8 — who decided, and the way back
 ```
 
 All eight blocks are REQUIRED. An emitter that cannot populate a block MUST
-omit the record rather than emit a partial one.
+omit the record; a partial one asserts more than it can support.
 
 ### 2.2 `profile`
 
@@ -88,8 +92,8 @@ profile:
 ```
 
 The profile is the only thing entitled to state which gates are mandatory and
-what floors they must clear (§4.3). Pinning its version is what makes *"which
-rules governed this release?"* answerable later.
+what floors they must clear (§4.3). Pinning its version is what lets a reader
+reconstruct the bar months later, when the profile itself has moved on.
 
 `tier` MUST be one of `T0`, `T1`, `T2` (§4.4).
 
@@ -115,8 +119,8 @@ subject:
 and not what it was *permitted to do*, is unsound. An agent measured inside a
 sandbox with default-deny egress and then deployed holding a standing
 production credential produces a record that is schema-valid and materially
-false. Implementations MUST populate `authority` from the policy actually in
-force during measurement, never from a declared intent.
+false. Implementations MUST populate `authority` from the policy in
+force during measurement, and never from a declared intent.
 
 ### 2.4 `task_set`
 
@@ -200,9 +204,9 @@ decision:
   signature: ed25519:...              # OPTIONAL below L4, REQUIRED at L4
 ```
 
-At tier `T2` the decision block additionally REQUIRES an ADR-shaped record, so
-that an auditor sees what was decided rather than only that something was
-approved:
+At tier `T2` the block additionally REQUIRES the three fields below, following
+the Markdown Architectural Decision Record format, so that a later reader has
+the question, the alternatives and the reasoning alongside the outcome:
 
 ```yaml
   question: "Promote candidate harness c_9f21 to the default review path?"
@@ -234,13 +238,14 @@ group that describes the trustworthiness of the measurement itself.
 
 | Group | Measures |
 |---|---|
-| Effectiveness | `task.completion` · `trajectory.valid` · `tool.correctness` · `answer.grounded` (judged) |
+| Effectiveness | `task.completion` · `trajectory.valid` · `tool.correctness` · `interop.routing_invocation` · `answer.grounded` (judged) |
 | Efficiency | `efficiency.cost_per_success` · `efficiency.tokens_per_success` · `efficiency.latency_per_success` |
 | Robustness | `reliability.pass_hat_k` · `reliability.pass_at_k` · `robustness.recovery` · `robustness.multi_turn` (judged) |
 | Safety | `policy.hard_rules` · `safety.injection_resistance` · `safety.tool_abuse` · `safety.isolation` |
 | Assurance | `assurance.judge_agreement` · `assurance.holdout_sealed` · `assurance.evidence_complete` · `assurance.evaluator_independence` |
 
-Eighteen measures, thirteen deterministic. That ratio is not a position this
+Twenty measures, eighteen of them deterministic. That ratio is not a
+position this
 specification argues for; it reflects an existing consensus that most agent
 correctness is checkable without a model in the loop.
 
@@ -267,7 +272,7 @@ An AQR MUST NOT contain an aggregate quality score, and a conformant renderer
 MUST NOT compute one. Gates pass or fail; every other measure is reported as a
 profile with a tolerance. Averaging across measures destroys the information the
 record exists to carry, and invites the failure this format is designed to
-prevent: a system that optimises the summary rather than the behaviour.
+prevent, where a system optimises the summary while the behaviour drifts.
 
 ### 4.3 Where floors come from
 
@@ -288,7 +293,7 @@ ignored. A profile declares a tier; the tier sets the mandatory gate set.
 |---|---|---|
 | `T0` | Local, reversible, well covered by existing tests | Deterministic gates only |
 | `T1` | Cross-service change, shared environment, external callers | Plus a sealed held-out split and a reliability floor |
-| `T2` | Irreversible data, production impact, identity, payments, or a regulated decision | Plus human disposition on the exact artifact (§2.8), plus signature |
+| `T2` | Irreversible data, production impact, identity, payments, or a regulated decision | Plus a recorded human decision naming the artifact (§2.8), plus signature |
 
 A profile MAY require more than its tier demands. It MUST NOT require less.
 
@@ -302,13 +307,13 @@ and the conformance suite in `conformance/` reproduces the claim.
 
 | Level | Requirement |
 |---|---|
-| **L1 — Emits** | Produces a schema-valid record with real digests in `profile`, `subject` and `task_set` |
+| **L1 — Emits** | Produces a schema-valid record carrying genuine digests for `profile`, `subject` and `task_set` |
 | **L2 — Gated** | Deterministic gates enforced per §4.1; held-out split sealed with a manifest digest; canary probes present |
 | **L3 — Calibrated** | Reliability reported as `pass^k`; judge version pinned with a human-agreement record; `assurance.evaluator_independence` asserted |
 | **L4 — Verifiable** | Record signed, and independently replayable from the referenced ledger by a party that did not run it |
 
 L4 is not a finishing touch. Severe monitor evasion — agents disabling tests and
-reporting that a review passed — has been measured in roughly 2% of real
+reporting that a review passed — has been measured in roughly 2% of production
 coding-agent sessions. Immutability alone only guarantees an unchanging record
 of whatever was submitted. Independent replay is what distinguishes a trustworthy
 record from a durable one.
@@ -332,7 +337,8 @@ Until `1.0.0` this specification is unstable and may change in incompatible ways
 An AQR asserts that an agent met a bar. Anything that can write records can
 assert that falsely, so:
 
-- Digests MUST be computed over the artifacts actually used, not declared.
+- Digests MUST be computed over the artifacts the run used, never over declared
+  intent.
 - `authority` MUST reflect the policy in force, not the policy intended.
 - An emitter SHOULD NOT run inside the same trust boundary as the agent being
   measured. Where it must, the record SHOULD NOT claim L3 or above.

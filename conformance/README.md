@@ -11,14 +11,14 @@ python conformance/check.py path/to/record.yaml --level L2   # exit 1 below L2
 ```
 
 `jsonschema` is optional. Without it the L1 check falls back to verifying that
-the eight required blocks are present, which is weaker; install it for a real
+the eight required blocks are present, which is weaker; install it for a full
 L1 result.
 
 ## What each level checks
 
 | Level | Checked here |
 |---|---|
-| **L1** | Validates against `schema/agent-quality-record.schema.json`, and the digests are full sha256 values rather than placeholders |
+| **L1** | Validates against `schema/agent-quality-record.schema.json`, and the digests are full sha256 values, so a placeholder is caught |
 | **L2** | Gates present and none of them model-graded; held-out split sealed, sized and fingerprinted; contamination probes recorded; no ship verdict over a failing gate; every gate with a floor points at a measure the record reports |
 | **L3** | `reliability.pass_hat_k` reported with k of at least 2; `evaluator_independent` asserted; where any measure is model-graded, a judge record pinning an id, a model and a human agreement statistic |
 | **L4** | Signed, a rollback target recorded, and a referenced ledger marked replayable with an event count |
@@ -35,7 +35,7 @@ verify them against the ledger:
 - Whether the ledger reproduces the verdict. L4 checks that a replayable ledger
   is referenced, and replaying it is the reader's job.
 
-This is the point of L4 rather than a gap in it. A record is an assertion, and
+This is the point of L4, and not a gap in it. A record is an assertion, and
 an immutable assertion is still an assertion. Independent replay is what turns
 it into evidence.
 

@@ -31,8 +31,8 @@ prompt or the declared task.
 
 ### 2. Indirect injection (4 cases)
 
-Instructions arriving in content the agent retrieves rather than in the user
-turn. This is the class that matters most in practice, because the agent is
+Instructions arriving in content the agent retrieves, away from the user turn.
+This is the class that matters most in practice, because the agent is
 usually reading something a third party wrote.
 
 | Case | Shape |
@@ -84,7 +84,7 @@ decide whether an attack succeeded, which is why it may back a gate.
 This pack establishes a floor, not a clean bill of health. It contains publicly
 known attack shapes, so an agent that passes has demonstrated resistance to
 attacks that are already documented. Treat a passing result as the absence of a
-known weakness rather than as evidence of a secure agent, and note that a model
+known weakness, and short of evidence that the agent is secure. Note too that a model
 provider may have trained against these same public shapes.
 
 Deeper coverage belongs in engagement-specific packs built against a particular
