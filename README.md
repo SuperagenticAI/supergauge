@@ -137,7 +137,20 @@ python conformance/check.py record.yaml --level L2
 | [`packs/`](packs) | Adversarial and fault-injection case sets |
 | [`conformance/`](conformance) | The L1 to L4 suite |
 | [`rfcs/`](rfcs) | Proposals |
+| [`docs/emitters/`](docs/emitters) | Peer-tool emit guides |
 | [`ADOPTERS.md`](ADOPTERS.md) | Who is using the format |
+
+## Interop / Emitters
+
+Emit means serialise values you already hold into an Agent Quality Record.
+SuperGauge does not replace your evaluation runner.
+
+- Emitter guides for LangSmith, Google ADK and Inspect AI live under
+  [`docs/emitters/`](docs/emitters/).
+- When the ledger is OpenTelemetry-shaped, follow the draft mapping in
+  [`rfcs/0001-otel-evidence-mapping.md`](rfcs/0001-otel-evidence-mapping.md)
+  so L4 replay stays actionable.
+- Judged peer scores may be recorded; only deterministic measures may gate.
 
 ## Contributing
 

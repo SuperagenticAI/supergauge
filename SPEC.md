@@ -352,15 +352,23 @@ assert that falsely, so:
 `assurance.evidence.format` names the shape of the referenced ledger. Two are
 recognised at v0.1:
 
-- `opentelemetry/1.x` — spans carrying agent run, tool call and model call
+- `opentelemetry/1.x` - spans carrying agent run, tool call and model call
   events. Chosen because it is what the surrounding ecosystem already exports.
-- `superqode.harness-protocol/1` — the native event ledger of the reference
+  For L4 replay to be actionable, emitters SHOULD follow the attribute and
+  event contract in [`rfcs/0001-otel-evidence-mapping.md`](rfcs/0001-otel-evidence-mapping.md)
+  (draft): tool invocations, policy/ACS decisions, attempt resets, task-set
+  manifest digests, and measure-derivation markers. The RFC is a mapping over
+  values a system already holds; it is not an OpenTelemetry product.
+- `superqode.harness-protocol/1` - the native event ledger of the reference
   implementation, carrying protocol version, event id, sequence, session, run,
   harness id, timestamp and parent event on every event.
 
 An implementation that already exports OTel can reach L1 without adopting any
 particular runtime. That is intentional: a format that requires switching
-runtimes before it can be tried does not get tried.
+runtimes before it can be tried does not get tried. Independent replay at L4
+still requires the ledger to carry enough structure that deterministic gates
+recompute identically; the OTel mapping RFC states what "enough" means in
+practice.
 
 ---
 
