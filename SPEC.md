@@ -50,6 +50,8 @@ SuperGauge is designed to sit above these, not to replace any of them.
 | Trace substrate | OpenTelemetry | `assurance.evidence.ledger` may reference OTel-shaped traces; see §8 |
 | Inner-loop grading | Google's agent quality flywheel | The flywheel produces the measurements. The record captures the release decision the flywheel does not make |
 | Where to fix | HarnessX D1–D9 | Orthogonal. SuperGauge measures say *how good*; D1–D9 says *where to change it*. A record may carry a D-tag as advisory |
+| Agent discovery | A2A Agent Card | `subject.agent_card` may bind the well-known card digest and skill allowlist; see [`rfcs/0002-a2a-agent-card-binding.md`](rfcs/0002-a2a-agent-card-binding.md) (draft) |
+| Supply-chain attestation | CycloneDX AIBOM, SLSA / in-toto | Optional `supply_chain` carries BOM and provenance digests; see [`rfcs/0003-supply-chain-aibom-slsa.md`](rfcs/0003-supply-chain-aibom-slsa.md) (draft) |
 
 Three positions this specification shares with the wider field, and claims no
 credit for: the party proposing a change must not grade it; a model
@@ -107,12 +109,18 @@ subject:
   model:
     provider: anthropic
     id: claude-opus-5
+    digest: sha256:77ab...              # OPTIONAL content pin
   authority:                            # REQUIRED — see below
     grant_digest: sha256:b830...
     acs_policy_version: "2.1"
     sandbox: docker
     egress: deny-by-default
     capabilities: [repo.read, "repo.write:branch", test.run]
+  agent_card:                           # OPTIONAL - A2A discovery binding
+    well_known_url: "https://agents.acme.example/.well-known/agent-card.json"
+    card_digest: sha256:c0ff...
+    version: "1.4.2"
+    skill_ids: [triage, escalate]
 ```
 
 `authority` is required because a record that pins only what the agent *is*,
@@ -121,6 +129,15 @@ sandbox with default-deny egress and then deployed holding a standing
 production credential produces a record that is schema-valid and materially
 false. Implementations MUST populate `authority` from the policy in
 force during measurement, and never from a declared intent.
+
+`agent_card` is optional. When the subject is published for A2A discovery,
+emitters MAY bind the well-known Agent Card URL, a digest of the card JSON at
+ship time, an optional version or ETag, and a skill-id allowlist that MUST be
+a subset of the skills on that card. The card is the discovery surface peers
+read; it does not replace `authority`. Profiles MAY gate on the deterministic
+measure `interop.agent_card_fresh`. See
+[`rfcs/0002-a2a-agent-card-binding.md`](rfcs/0002-a2a-agent-card-binding.md)
+(draft).
 
 ### 2.4 `task_set`
 
@@ -214,6 +231,28 @@ the question, the alternatives and the reasoning alongside the outcome:
   rationale: "Held-out completion 0.83 against a 0.80 floor; pass^5 0.66 against 0.60."
 ```
 
+### 2.9 Optional `supply_chain`
+
+The eight blocks in §2.1 remain REQUIRED. An emitter MAY additionally include
+a `supply_chain` object when it holds attestation artifacts for the release:
+
+```yaml
+supply_chain:
+  aibom_digest: sha256:a1b0...
+  aibom_format: "cyclonedx-1.6+aibom"
+  slsa_provenance_digest: sha256:b2c1...
+  provenance_format: "slsa/v1"
+  mcp_servers:
+    - {name: github, version: "2.1.0", digest: sha256:d4e3...}
+```
+
+Fields record digests and references only. SuperGauge does not generate bills
+of materials or provenance. When a profile requires supply-chain evidence, L2
+expects a present AIBOM digest covering models and tools in scope; L4 expects
+signed BOM and provenance that an independent party can verify. See
+[`rfcs/0003-supply-chain-aibom-slsa.md`](rfcs/0003-supply-chain-aibom-slsa.md)
+(draft).
+
 ---
 
 ## 3. The measure registry
@@ -238,13 +277,13 @@ group that describes the trustworthiness of the measurement itself.
 
 | Group | Measures |
 |---|---|
-| Effectiveness | `task.completion` · `trajectory.valid` · `tool.correctness` · `interop.routing_invocation` · `answer.grounded` (judged) |
+| Effectiveness | `task.completion` · `trajectory.valid` · `tool.correctness` · `interop.routing_invocation` · `interop.agent_card_fresh` · `answer.grounded` (judged) |
 | Efficiency | `efficiency.cost_per_success` · `efficiency.tokens_per_success` · `efficiency.latency_per_success` |
 | Robustness | `reliability.pass_hat_k` · `reliability.pass_at_k` · `robustness.recovery` · `robustness.multi_turn` (judged) |
 | Safety | `policy.hard_rules` · `safety.injection_resistance` · `safety.tool_abuse` · `safety.isolation` |
 | Assurance | `assurance.judge_agreement` · `assurance.holdout_sealed` · `assurance.evidence_complete` · `assurance.evaluator_independence` |
 
-Twenty measures, eighteen of them deterministic. That ratio is not a
+Twenty-one measures, nineteen of them deterministic. That ratio is not a
 position this
 specification argues for; it reflects an existing consensus that most agent
 correctness is checkable without a model in the loop.
@@ -312,6 +351,13 @@ and the conformance suite in `conformance/` reproduces the claim.
 | **L3 — Calibrated** | Reliability reported as `pass^k`; judge version pinned with a human-agreement record; `assurance.evaluator_independence` asserted |
 | **L4 — Verifiable** | Record signed, and independently replayable from the referenced ledger by a party that did not run it |
 
+When a profile requires supply-chain evidence, L2 additionally expects
+`supply_chain.aibom_digest` covering models and tools in scope, and L4
+expects signed BOM and provenance digests that verify independently (see
+[`rfcs/0003-supply-chain-aibom-slsa.md`](rfcs/0003-supply-chain-aibom-slsa.md)).
+Those expectations do not invent new level numbers; they refine what the
+profile asks of an existing level.
+
 L4 is not a finishing touch. Severe monitor evasion — agents disabling tests and
 reporting that a review passed — has been measured in roughly 2% of production
 coding-agent sessions. Immutability alone only guarantees an unchanging record
@@ -369,6 +415,12 @@ runtimes before it can be tried does not get tried. Independent replay at L4
 still requires the ledger to carry enough structure that deterministic gates
 recompute identically; the OTel mapping RFC states what "enough" means in
 practice.
+
+Related draft bindings outside the ledger itself:
+[`rfcs/0002-a2a-agent-card-binding.md`](rfcs/0002-a2a-agent-card-binding.md)
+(Agent Card under `subject`) and
+[`rfcs/0003-supply-chain-aibom-slsa.md`](rfcs/0003-supply-chain-aibom-slsa.md)
+(optional `supply_chain` digests).
 
 ---
 
