@@ -17,7 +17,6 @@
     "decision"
   ],
   "additionalProperties": false,
-
   "properties": {
     "supergauge": {
       "description": "Specification version this record conforms to.",
@@ -35,35 +34,68 @@
       "type": "string",
       "format": "date-time"
     },
-
     "profile": {
       "description": "The bar this release was held to. The profile is the only thing entitled to state which gates are mandatory and what they must clear.",
       "type": "object",
-      "required": ["id", "version", "tier"],
+      "required": [
+        "id",
+        "version",
+        "tier"
+      ],
       "additionalProperties": false,
       "properties": {
-        "id": { "type": "string", "pattern": "^[a-z0-9]+(?:[-/][a-z0-9._-]+)*$" },
-        "version": { "type": "string", "minLength": 1 },
-        "tier": { "$ref": "#/$defs/tier" }
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:[-/][a-z0-9._-]+)*$"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tier": {
+          "$ref": "#/$defs/tier"
+        }
       }
     },
-
     "subject": {
       "description": "What was measured. Identity alone is insufficient: authority is required, because an agent measured under one execution policy and shipped under another produces a record that is valid and false.",
       "type": "object",
-      "required": ["agent", "harness_digest", "authority"],
+      "required": [
+        "agent",
+        "harness_digest",
+        "authority"
+      ],
       "additionalProperties": false,
       "properties": {
-        "agent": { "type": "string", "minLength": 1 },
-        "harness_digest": { "$ref": "#/$defs/digest" },
-        "code_digest": { "$ref": "#/$defs/digest" },
+        "agent": {
+          "type": "string",
+          "minLength": 1
+        },
+        "harness_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "code_digest": {
+          "$ref": "#/$defs/digest"
+        },
         "model": {
           "type": "object",
-          "required": ["provider", "id"],
+          "required": [
+            "provider",
+            "id"
+          ],
           "additionalProperties": false,
           "properties": {
-            "provider": { "type": "string", "minLength": 1 },
-            "id": { "type": "string", "minLength": 1 }
+            "provider": {
+              "type": "string",
+              "minLength": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "digest": {
+              "$ref": "#/$defs/digest"
+            }
           }
         },
         "authority": {
@@ -71,36 +103,105 @@
           "type": "object",
           "additionalProperties": false,
           "anyOf": [
-            { "required": ["grant_digest"] },
-            { "required": ["acs_policy_version"] }
+            {
+              "required": [
+                "grant_digest"
+              ]
+            },
+            {
+              "required": [
+                "acs_policy_version"
+              ]
+            }
           ],
           "properties": {
-            "grant_digest": { "$ref": "#/$defs/digest" },
-            "acs_policy_version": { "type": "string", "minLength": 1 },
-            "sandbox": { "type": "string", "minLength": 1 },
+            "grant_digest": {
+              "$ref": "#/$defs/digest"
+            },
+            "acs_policy_version": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sandbox": {
+              "type": "string",
+              "minLength": 1
+            },
             "egress": {
               "type": "string",
-              "enum": ["deny-by-default", "allow-list", "unrestricted"]
+              "enum": [
+                "deny-by-default",
+                "allow-list",
+                "unrestricted"
+              ]
             },
             "capabilities": {
               "type": "array",
-              "items": { "type": "string", "minLength": 1 },
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
               "uniqueItems": true
+            }
+          }
+        },
+        "agent_card": {
+          "description": "Optional A2A Agent Card binding. Digests the published card at ship time; does not replace authority. See rfcs/0002-a2a-agent-card-binding.md.",
+          "type": "object",
+          "required": [
+            "well_known_url",
+            "card_digest"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "well_known_url": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Absolute URL of the Agent Card (typically /.well-known/agent-card.json)."
+            },
+            "card_digest": {
+              "$ref": "#/$defs/digest"
+            },
+            "version": {
+              "type": "string",
+              "minLength": 1
+            },
+            "etag": {
+              "type": "string",
+              "minLength": 1
+            },
+            "skill_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true,
+              "description": "Allowlist of skill ids; MUST be a subset of skills on the digested card."
             }
           }
         }
       }
     },
-
     "task_set": {
       "description": "What the subject was measured against.",
       "type": "object",
-      "required": ["manifest_digest", "sealed"],
+      "required": [
+        "manifest_digest",
+        "sealed"
+      ],
       "additionalProperties": false,
       "properties": {
-        "manifest_digest": { "$ref": "#/$defs/digest" },
-        "held_in": { "type": "integer", "minimum": 0 },
-        "held_out": { "type": "integer", "minimum": 0 },
+        "manifest_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "held_in": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "held_out": {
+          "type": "integer",
+          "minimum": 0
+        },
         "sealed": {
           "description": "True only where no optimizer, tuning loop or prompt-authoring process has read the held-out split. Where this cannot be established it MUST be false.",
           "type": "boolean"
@@ -108,26 +209,49 @@
         "canary_ids": {
           "description": "Contamination probes. A fired probe blocks a ship verdict.",
           "type": "array",
-          "items": { "type": "string", "minLength": 1 },
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
           "uniqueItems": true
         }
       }
     },
-
     "measures": {
       "type": "array",
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["id", "value"],
+        "required": [
+          "id",
+          "value"
+        ],
         "additionalProperties": false,
         "properties": {
-          "id": { "$ref": "#/$defs/measureId" },
-          "value": { "type": ["number", "boolean"] },
-          "split": { "$ref": "#/$defs/split" },
-          "n": { "type": "integer", "minimum": 1 },
-          "k": { "type": "integer", "minimum": 2 },
-          "unit": { "type": "string", "minLength": 1 },
+          "id": {
+            "$ref": "#/$defs/measureId"
+          },
+          "value": {
+            "type": [
+              "number",
+              "boolean"
+            ]
+          },
+          "split": {
+            "$ref": "#/$defs/split"
+          },
+          "n": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "k": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "unit": {
+            "type": "string",
+            "minLength": 1
+          },
           "pack": {
             "description": "Versioned pack that produced this value, as <pack>@<version>.",
             "type": "string",
@@ -139,63 +263,126 @@
             "description": "A pass^k or pass@k value is meaningless without k.",
             "if": {
               "properties": {
-                "id": { "enum": ["reliability.pass_hat_k", "reliability.pass_at_k"] }
+                "id": {
+                  "enum": [
+                    "reliability.pass_hat_k",
+                    "reliability.pass_at_k"
+                  ]
+                }
               },
-              "required": ["id"]
+              "required": [
+                "id"
+              ]
             },
-            "then": { "required": ["k"] }
+            "then": {
+              "required": [
+                "k"
+              ]
+            }
           }
         ]
       }
     },
-
     "gates": {
       "description": "Conditions that had to hold. Deterministic only; a model-graded measure can never satisfy one.",
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "result"],
+        "required": [
+          "id",
+          "result"
+        ],
         "additionalProperties": false,
         "properties": {
-          "id": { "$ref": "#/$defs/measureId" },
-          "result": { "type": "string", "enum": ["pass", "fail"] },
-          "floor": { "type": "number" },
-          "split": { "$ref": "#/$defs/split" },
-          "source": { "type": "string", "enum": ["acs", "assert", "native", "custom"] }
+          "id": {
+            "$ref": "#/$defs/measureId"
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "pass",
+              "fail"
+            ]
+          },
+          "floor": {
+            "type": "number"
+          },
+          "split": {
+            "$ref": "#/$defs/split"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "acs",
+              "assert",
+              "native",
+              "custom"
+            ]
+          }
         }
       }
     },
-
     "assurance": {
       "description": "Why the measures above can be believed.",
       "type": "object",
-      "required": ["evidence", "evaluator_independent"],
+      "required": [
+        "evidence",
+        "evaluator_independent"
+      ],
       "additionalProperties": false,
       "properties": {
         "judge": {
           "description": "Required where any measure is model-graded.",
           "type": "object",
-          "required": ["id", "model"],
+          "required": [
+            "id",
+            "model"
+          ],
           "additionalProperties": false,
           "properties": {
-            "id": { "type": "string", "minLength": 1 },
-            "model": { "type": "string", "minLength": 1 },
-            "human_agreement_kappa": { "type": "number", "minimum": -1, "maximum": 1 },
-            "sampled": { "type": "integer", "minimum": 1 }
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "model": {
+              "type": "string",
+              "minLength": 1
+            },
+            "human_agreement_kappa": {
+              "type": "number",
+              "minimum": -1,
+              "maximum": 1
+            },
+            "sampled": {
+              "type": "integer",
+              "minimum": 1
+            }
           }
         },
         "evidence": {
           "type": "object",
-          "required": ["ledger", "format", "replayable"],
+          "required": [
+            "ledger",
+            "format",
+            "replayable"
+          ],
           "additionalProperties": false,
           "properties": {
-            "ledger": { "type": "string", "minLength": 1 },
+            "ledger": {
+              "type": "string",
+              "minLength": 1
+            },
             "format": {
               "type": "string",
               "pattern": "^(opentelemetry/1\\.[0-9x]+|superqode\\.harness-protocol/1|[a-z0-9._-]+/[0-9]+)$"
             },
-            "events": { "type": "integer", "minimum": 0 },
-            "replayable": { "type": "boolean" }
+            "events": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "replayable": {
+              "type": "boolean"
+            }
           }
         },
         "evaluator_independent": {
@@ -204,64 +391,235 @@
         }
       }
     },
-
     "decision": {
       "type": "object",
-      "required": ["verdict", "actor"],
+      "required": [
+        "verdict",
+        "actor"
+      ],
       "additionalProperties": false,
       "properties": {
-        "verdict": { "type": "string", "enum": ["ship", "hold", "reject"] },
-        "actor": { "type": "string", "minLength": 1 },
-        "rolls_back_to": { "$ref": "#/$defs/digest" },
-        "signature": { "type": "string", "pattern": "^[a-z0-9-]+:.+$" },
-        "question": { "type": "string", "minLength": 1 },
+        "verdict": {
+          "type": "string",
+          "enum": [
+            "ship",
+            "hold",
+            "reject"
+          ]
+        },
+        "actor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rolls_back_to": {
+          "$ref": "#/$defs/digest"
+        },
+        "signature": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+:.+$"
+        },
+        "question": {
+          "type": "string",
+          "minLength": 1
+        },
         "options": {
           "type": "array",
           "minItems": 2,
-          "items": { "type": "string", "minLength": 1 }
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
         },
-        "rationale": { "type": "string", "minLength": 1 }
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "supply_chain": {
+      "description": "Optional supply-chain attestation digests and MCP pins. Record-only; SuperGauge does not generate BOMs. See rfcs/0003-supply-chain-aibom-slsa.md.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "aibom_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "aibom_format": {
+          "type": "string",
+          "minLength": 1
+        },
+        "slsa_provenance_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "provenance_format": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model_digests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "provider",
+              "id",
+              "digest"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "provider": {
+                "type": "string",
+                "minLength": 1
+              },
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "digest": {
+                "$ref": "#/$defs/digest"
+              }
+            }
+          }
+        },
+        "tool_digests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "digest"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "digest": {
+                "$ref": "#/$defs/digest"
+              }
+            }
+          }
+        },
+        "mcp_servers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "version": {
+                "type": "string",
+                "minLength": 1
+              },
+              "digest": {
+                "$ref": "#/$defs/digest"
+              },
+              "endpoint_digest": {
+                "$ref": "#/$defs/digest"
+              }
+            }
+          }
+        }
       }
     }
   },
-
   "allOf": [
     {
       "description": "Ship rule, first clause. A ship verdict requires every gate to have passed.",
       "if": {
-        "properties": { "decision": { "properties": { "verdict": { "const": "ship" } } } },
-        "required": ["decision"]
+        "properties": {
+          "decision": {
+            "properties": {
+              "verdict": {
+                "const": "ship"
+              }
+            }
+          }
+        },
+        "required": [
+          "decision"
+        ]
       },
       "then": {
         "properties": {
-          "gates": { "items": { "properties": { "result": { "const": "pass" } } } }
+          "gates": {
+            "items": {
+              "properties": {
+                "result": {
+                  "const": "pass"
+                }
+              }
+            }
+          }
         }
       }
     },
     {
       "description": "Ship rule, second clause. An unsealed held-out split cannot carry a ship verdict at any measured value.",
       "if": {
-        "properties": { "decision": { "properties": { "verdict": { "const": "ship" } } } },
-        "required": ["decision"]
+        "properties": {
+          "decision": {
+            "properties": {
+              "verdict": {
+                "const": "ship"
+              }
+            }
+          }
+        },
+        "required": [
+          "decision"
+        ]
       },
       "then": {
-        "properties": { "task_set": { "properties": { "sealed": { "const": true } } } }
+        "properties": {
+          "task_set": {
+            "properties": {
+              "sealed": {
+                "const": true
+              }
+            }
+          }
+        }
       }
     },
     {
       "description": "Tier T2 requires a recorded human decision, not only an approval, and a signature.",
       "if": {
-        "properties": { "profile": { "properties": { "tier": { "const": "T2" } } } },
-        "required": ["profile"]
+        "properties": {
+          "profile": {
+            "properties": {
+              "tier": {
+                "const": "T2"
+              }
+            }
+          }
+        },
+        "required": [
+          "profile"
+        ]
       },
       "then": {
         "properties": {
-          "decision": { "required": ["verdict", "actor", "question", "options", "rationale", "signature"] }
+          "decision": {
+            "required": [
+              "verdict",
+              "actor",
+              "question",
+              "options",
+              "rationale",
+              "signature"
+            ]
+          }
         }
       }
     }
   ],
-
   "$defs": {
     "digest": {
       "type": "string",
@@ -269,11 +627,19 @@
     },
     "tier": {
       "type": "string",
-      "enum": ["T0", "T1", "T2"]
+      "enum": [
+        "T0",
+        "T1",
+        "T2"
+      ]
     },
     "split": {
       "type": "string",
-      "enum": ["held-in", "held-out", "all"]
+      "enum": [
+        "held-in",
+        "held-out",
+        "all"
+      ]
     },
     "measureId": {
       "description": "A registered measure id, or an x- prefixed local extension. Records using x- measures reach L1 only.",

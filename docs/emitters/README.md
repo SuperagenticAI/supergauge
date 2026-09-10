@@ -37,11 +37,29 @@ Cite only ids published under [`measures/`](../../measures/). Do not invent
 identifiers. If a peer score has no registry home yet, leave it out of
 `measures[]` or propose an RFC; do not gate on it under a made-up name.
 
+## Agent Card and AIBOM digests (serialize-only)
+
+When the peer already holds an A2A Agent Card or an AIBOM / provenance
+artifact, emit digests into the record. Do not fetch or invent them inside
+SuperGauge.
+
+| Already held | Write into |
+|---|---|
+| Published Agent Card JSON (or its content hash) | `subject.agent_card.well_known_url`, `card_digest`, optional `version` / `etag` / `skill_ids` |
+| Card freshness check at emission | `measures[]` / optional `gates[]` entry for `interop.agent_card_fresh` |
+| CycloneDX ML-BOM / AIBOM document | `supply_chain.aibom_digest` (optional `aibom_format`) |
+| SLSA or in-toto attestation | `supply_chain.slsa_provenance_digest` (optional `provenance_format`) |
+| MCP servers configured for the run | `supply_chain.mcp_servers[]` with name and digests |
+
+Draft field contracts:
+[`rfcs/0002-a2a-agent-card-binding.md`](../../rfcs/0002-a2a-agent-card-binding.md),
+[`rfcs/0003-supply-chain-aibom-slsa.md`](../../rfcs/0003-supply-chain-aibom-slsa.md).
+
 ## Deterministic vs judged (reminder)
 
 | Kind | May gate? | Examples in the registry |
 |---|---|---|
-| Deterministic | Yes | `task.completion`, `tool.correctness`, `trajectory.valid`, `reliability.pass_hat_k`, `policy.hard_rules`, `safety.injection_resistance` |
+| Deterministic | Yes | `task.completion`, `tool.correctness`, `trajectory.valid`, `reliability.pass_hat_k`, `policy.hard_rules`, `safety.injection_resistance`, `interop.agent_card_fresh` |
 | Judged | No | `answer.grounded` |
 
 A peer "LLM-as-judge" or rubric score maps to a judged measure (or to

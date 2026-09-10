@@ -150,6 +150,12 @@ SuperGauge does not replace your evaluation runner.
 - When the ledger is OpenTelemetry-shaped, follow the draft mapping in
   [`rfcs/0001-otel-evidence-mapping.md`](rfcs/0001-otel-evidence-mapping.md)
   so L4 replay stays actionable.
+- **A2A Agent Card:** draft binding for `subject.agent_card` (well-known URL,
+  card digest, skill allowlist) in
+  [`rfcs/0002-a2a-agent-card-binding.md`](rfcs/0002-a2a-agent-card-binding.md).
+- **Supply chain:** optional `supply_chain` digests for AIBOM / CycloneDX and
+  SLSA or in-toto provenance in
+  [`rfcs/0003-supply-chain-aibom-slsa.md`](rfcs/0003-supply-chain-aibom-slsa.md).
 - Judged peer scores may be recorded; only deterministic measures may gate.
 
 ## Contributing
