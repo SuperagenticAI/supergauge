@@ -94,6 +94,15 @@ already exports traces. Coding agents produce long tool-call sequences, so the
 ledger is usually the largest artifact a record references; retaining it for the
 life of the record is what makes L4 reachable.
 
+## Advisory: System One / Jev reporting
+
+When the coding loop uses SuperQode SystemOne or TypeSafe Jev for tool gates or
+rubric grades, emitters MAY pin `assurance.judge.model` and `pack_digest`,
+record judged scores, and apply a soft `decision.hold` on low confidence.
+Those signals are advisory for this profile: they do not add mandatory gates at
+`0.1`. See
+[`rfcs/0004-jev-systemone-interop.md`](../rfcs/0004-jev-systemone-interop.md).
+
 ## Changelog
 
 - `0.1` — first draft. Gates settled, thresholds deliberately unset.

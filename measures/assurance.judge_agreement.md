@@ -69,7 +69,21 @@ id and model.
 Permitted. A profile MAY require a minimum kappa before judged measures are
 reported at all.
 
+## Jev / System One labels
+
+When the model judge is TypeSafe AI Jev (or another System One client such as
+SuperQode SystemOne), the first label set is the stored Jev disposition (for
+example Choice `allow` / `deny` / `ask`, or a rubric level) and the second is a
+blind human label on the same items under the same pack and rubric. Kappa is
+still arithmetic over those stored labels. Raw confidence and Noul values are
+not inputs to this measure and MUST NOT be used as a substitute gate.
+
+Pin the versioned model id and question-pack digest on `assurance.judge` when
+reporting this measure for a System One judge (see
+[`rfcs/0004-jev-systemone-interop.md`](../rfcs/0004-jev-systemone-interop.md)).
+
 ## Related
 
 `answer.grounded` and `robustness.multi_turn` are the judged measures this
-qualifies.
+qualifies. System One Score/Noul grades that map to judged measures inherit the
+same agreement requirement at L3.

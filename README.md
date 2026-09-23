@@ -145,8 +145,8 @@ python conformance/check.py record.yaml --level L2
 Emit means serialise values you already hold into an Agent Quality Record.
 SuperGauge does not replace your evaluation runner.
 
-- Emitter guides for LangSmith, Google ADK and Inspect AI live under
-  [`docs/emitters/`](docs/emitters/).
+- Emitter guides for LangSmith, Google ADK, Inspect AI, Jev / System One, and
+  SuperQode live under [`docs/emitters/`](docs/emitters/).
 - When the ledger is OpenTelemetry-shaped, follow the draft mapping in
   [`rfcs/0001-otel-evidence-mapping.md`](rfcs/0001-otel-evidence-mapping.md)
   so L4 replay stays actionable.
@@ -156,6 +156,10 @@ SuperGauge does not replace your evaluation runner.
 - **Supply chain:** optional `supply_chain` digests for AIBOM / CycloneDX and
   SLSA or in-toto provenance in
   [`rfcs/0003-supply-chain-aibom-slsa.md`](rfcs/0003-supply-chain-aibom-slsa.md).
+- **Jev / System One:** assurance pinning (versioned model id, pack digest),
+  judged Score/Noul mapping, and soft `decision.hold` when confidence is low, in
+  [`rfcs/0004-jev-systemone-interop.md`](rfcs/0004-jev-systemone-interop.md).
+  SuperGauge does not host or call Jev.
 - Judged peer scores may be recorded; only deterministic measures may gate.
 
 ## Contributing

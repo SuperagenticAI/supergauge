@@ -52,6 +52,7 @@ SuperGauge is designed to sit above these, not to replace any of them.
 | Where to fix | HarnessX D1–D9 | Orthogonal. SuperGauge measures say *how good*; D1–D9 says *where to change it*. A record may carry a D-tag as advisory |
 | Agent discovery | A2A Agent Card | `subject.agent_card` may bind the well-known card digest and skill allowlist; see [`rfcs/0002-a2a-agent-card-binding.md`](rfcs/0002-a2a-agent-card-binding.md) (draft) |
 | Supply-chain attestation | CycloneDX AIBOM, SLSA / in-toto | Optional `supply_chain` carries BOM and provenance digests; see [`rfcs/0003-supply-chain-aibom-slsa.md`](rfcs/0003-supply-chain-aibom-slsa.md) (draft) |
+| Typed decision models | TypeSafe AI Jev (System One) | Emitters MAY pin System One judge fields and map Score/Noul to judged measures; soft hold is emitter policy. SuperGauge does not host or call Jev; see [`rfcs/0004-jev-systemone-interop.md`](rfcs/0004-jev-systemone-interop.md) (draft) |
 
 Three positions this specification shares with the wider field, and claims no
 credit for: the party proposing a change must not grade it; a model
@@ -191,9 +192,11 @@ registry. **A judged measure may never back a gate.**
 assurance:
   judge:
     id: sg/rubric@0.3
-    model: claude-sonnet-5
+    model: claude-sonnet-5            # or a pinned System One id such as jev-1.13.0
+    pack_digest: sha256:9c1e...       # OPTIONAL: frozen question-pack digest (System One)
     human_agreement_kappa: 0.71
     sampled: 40
+    calibration_ece: 0.08             # OPTIONAL: Expected Calibration Error when measured
   evidence:
     ledger: .superqode/harness-protocol/
     format: superqode.harness-protocol/1     # or opentelemetry/1.x
@@ -209,7 +212,15 @@ prevents task leakage, independence prevents evidence fabrication. Both are
 required at higher conformance levels because both failures have been measured
 in production coding-agent sessions.
 
-`judge` MAY be omitted when a record contains no judged measures.
+`judge` MAY be omitted when a record contains no judged measures. When the judge
+is a System One model such as Jev, `model` SHOULD be a versioned id (for
+example `jev-1.13.0`), and `pack_digest` SHOULD fingerprint the question pack
+used for those answers. `calibration_ece` is optional. Raw confidence, Score,
+and Noul values remain judged or probabilistic signals: they MUST NOT alone
+hard-gate `ship` (see §4.1). Emitters MAY record a soft `decision.hold` when
+confidence is low while deterministic gates stay independent. See
+[`rfcs/0004-jev-systemone-interop.md`](rfcs/0004-jev-systemone-interop.md)
+(draft).
 
 ### 2.8 `decision`
 
@@ -418,9 +429,11 @@ practice.
 
 Related draft bindings outside the ledger itself:
 [`rfcs/0002-a2a-agent-card-binding.md`](rfcs/0002-a2a-agent-card-binding.md)
-(Agent Card under `subject`) and
+(Agent Card under `subject`),
 [`rfcs/0003-supply-chain-aibom-slsa.md`](rfcs/0003-supply-chain-aibom-slsa.md)
-(optional `supply_chain` digests).
+(optional `supply_chain` digests), and
+[`rfcs/0004-jev-systemone-interop.md`](rfcs/0004-jev-systemone-interop.md)
+(Jev / System One assurance pinning and soft hold).
 
 ---
 
