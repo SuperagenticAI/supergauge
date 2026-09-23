@@ -30,6 +30,8 @@ python conformance/check.py record.yaml --level L1
 | LangSmith | [`langsmith.md`](langsmith.md) | Experiment / dataset eval results, feedback scores, traces |
 | Google ADK | [`adk.md`](adk.md) | Evalset cases, trajectory and response metrics, result JSON |
 | Inspect AI | [`inspect.md`](inspect.md) | `.eval` / JSON eval logs (`EvalLog`) |
+| Jev / System One | [`jev-systemone.md`](jev-systemone.md) | Versioned model id, pack digest, Score/Noul/Choice answers, confidence |
+| SuperQode | [`superqode.md`](superqode.md) | Harness-protocol ledger, SystemOne tool_gate / rubric grades, promotion state |
 
 ## Measure ids
 
@@ -53,14 +55,19 @@ SuperGauge.
 
 Draft field contracts:
 [`rfcs/0002-a2a-agent-card-binding.md`](../../rfcs/0002-a2a-agent-card-binding.md),
-[`rfcs/0003-supply-chain-aibom-slsa.md`](../../rfcs/0003-supply-chain-aibom-slsa.md).
+[`rfcs/0003-supply-chain-aibom-slsa.md`](../../rfcs/0003-supply-chain-aibom-slsa.md),
+[`rfcs/0004-jev-systemone-interop.md`](../../rfcs/0004-jev-systemone-interop.md).
+
+When the peer already holds System One answers, pin `assurance.judge.model` and
+optional `pack_digest`; map Score/Noul to judged measures; use soft
+`decision.hold` for low confidence. Do not call TypeSafe from SuperGauge.
 
 ## Deterministic vs judged (reminder)
 
 | Kind | May gate? | Examples in the registry |
 |---|---|---|
 | Deterministic | Yes | `task.completion`, `tool.correctness`, `trajectory.valid`, `reliability.pass_hat_k`, `policy.hard_rules`, `safety.injection_resistance`, `interop.agent_card_fresh` |
-| Judged | No | `answer.grounded` |
+| Judged | No | `answer.grounded`, System One Score/Noul grades |
 
 A peer "LLM-as-judge" or rubric score maps to a judged measure (or to
 `assurance.judge`), never to `gates[]`.

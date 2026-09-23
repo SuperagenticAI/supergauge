@@ -356,6 +356,16 @@
             "sampled": {
               "type": "integer",
               "minimum": 1
+            },
+            "pack_digest": {
+              "$ref": "#/$defs/digest",
+              "description": "Optional digest of the frozen question pack used with a System One / typed judge. See rfcs/0004-jev-systemone-interop.md."
+            },
+            "calibration_ece": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Optional Expected Calibration Error (or documented calibration summary in [0, 1]) for the pinned judge when measured."
             }
           }
         },
