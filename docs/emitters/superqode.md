@@ -139,3 +139,23 @@ decision:
 `policy.hard_rules`, `safety.tool_abuse`, `safety.isolation`, `task.completion`,
 `reliability.pass_hat_k`, `answer.grounded`, `assurance.judge_agreement`,
 `assurance.evidence_complete`, `assurance.evaluator_independence`.
+
+## Test integrity (RFC 0005)
+
+SuperQode hermetic sandboxes, sealed manifests, and ACS permission boundaries
+already produce integrity facts. Serialise them; do not re-run evaluation inside
+SuperGauge.
+
+| SuperQode fact | AQR field |
+|---|---|
+| Protected metrics / answer keys outside agent write scope | `integrity.metric_custody: external` |
+| Independent replay / recompute attestation | `integrity.recompute_digest` |
+| Contamination / unpassable probes | `task_set.canary_ids` + `integrity.canaries[]` |
+| Hermetic workspace / no reward-file write | `integrity.hermetic_workspace` |
+| Propose vs apply/grade capability split | `integrity.capability_disjoint_roles` |
+| SystemOne / rubric feedback returned to the agent | `integrity.review_feedback` |
+| ACS or canary failure overriding a judged PASS | `integrity.mechanical_override: true` |
+
+Keep soft hold when `review_feedback: detailed` across retries. See
+[`rfcs/0005-test-integrity-reward-hack.md`](../../rfcs/0005-test-integrity-reward-hack.md).
+

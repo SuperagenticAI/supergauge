@@ -43,6 +43,10 @@ it into evidence.
 
 `examples/l4-passing.yaml` reaches L4.
 
+`examples/l3-integrity-soft-hold.yaml` is an L3-shaped soft-hold with
+optional `assurance.integrity` (RFC 0005): deterministic gates pass,
+judged evidence stays non-gating, and detailed review feedback triggers hold.
+
 `examples/l1-only.yaml` is structurally reasonable and fails everything above
 L1, on purpose. It carries an unsealed split with no probes, uses the
 model-graded `answer.grounded` as a gate, and claims a ship verdict over a
