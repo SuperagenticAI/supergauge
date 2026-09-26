@@ -219,6 +219,20 @@ studies cost whatever sampling the organisation already budgets for L3.
 - Declaring numeric confidence floors in the core (floors are profile- or
   emitter-scoped; SPEC §4.3).
 
+## Errata (2026-09-24): Jev swap is a model/component change
+
+Prefactor's note on replacing an LLM step with Jev
+([jev-swap-llm-step-did-agent-get-worse](https://prefactor.tech/blog/jev-swap-llm-step-did-agent-get-worse),
+2026-09-24) clarifies a governance point this RFC already implies: a Jev swap is
+a **model or component change**, with the same regression risk as swapping any
+other decision model. Pre-ship evals on a fixed set cannot alone prove production
+behaviour did not worsen. Emitters SHOULD version-tag the component that handled
+the step (`assurance.judge.model` and related subject digests), record confidence
+(or abstention) alongside downstream outcome criteria used for calibration, and
+prefer soft `decision.hold` when confidence is low or before/after outcome
+coverage is incomplete. Soft hold remains emitter policy; raw confidence still
+MUST NOT alone hard-gate `ship` (SPEC §4.1).
+
 ## Open questions
 
 - Whether `calibration_ece` should later move to a dedicated deterministic

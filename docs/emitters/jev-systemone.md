@@ -121,3 +121,14 @@ gates from the referenced ledger.
 
 `answer.grounded`, `assurance.judge_agreement`, `assurance.evaluator_independence`,
 `assurance.evidence_complete`, `task.completion`, `policy.hard_rules`.
+
+## Jev swap calibration (Prefactor, 2026-09-24)
+
+Replacing an LLM step with Jev is a **model/component change**. Version-tag the
+step (`assurance.judge.model`), record confidence or abstention, and keep a
+downstream outcome signal for before/after calibration. Prefer soft
+`decision.hold` when confidence is low or production outcome coverage is thin.
+Pre-ship evals alone do not prove the agent did not get worse
+([Prefactor note](https://prefactor.tech/blog/jev-swap-llm-step-did-agent-get-worse);
+RFC 0004 errata). Raw confidence still must not alone hard-gate `ship`.
+

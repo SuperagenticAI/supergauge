@@ -398,6 +398,93 @@
         "evaluator_independent": {
           "description": "True only where the grader saw the artifact and resulting world state, and not the worker's own transcript, plan or self-report.",
           "type": "boolean"
+        },
+        "integrity": {
+          "description": "Optional test-integrity / reward-hack resistance evidence. See rfcs/0005-test-integrity-reward-hack.md.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "metric_custody": {
+              "type": "string",
+              "enum": [
+                "external",
+                "shared",
+                "agent-writable"
+              ],
+              "description": "Where protected metrics and grader oracles live relative to the agent write scope."
+            },
+            "recompute_digest": {
+              "$ref": "#/$defs/digest",
+              "description": "Digest of an independent held-out recompute attestation."
+            },
+            "recompute_party": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Identity of the party that performed independent recompute."
+            },
+            "protected_metric_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "description": "Measure ids whose oracles are outside agent control for this record."
+            },
+            "canaries": {
+              "type": "array",
+              "description": "Canary / unpassable probe outcomes (expected vs observed).",
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "expected",
+                  "observed"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "expected": {
+                    "type": "string",
+                    "enum": [
+                      "pass",
+                      "fail"
+                    ]
+                  },
+                  "observed": {
+                    "type": "string",
+                    "enum": [
+                      "pass",
+                      "fail"
+                    ]
+                  }
+                }
+              }
+            },
+            "hermetic_workspace": {
+              "type": "boolean",
+              "description": "True when the agent workspace lacked exfiltration paths to grader secrets or mutable reward files."
+            },
+            "capability_disjoint_roles": {
+              "type": "boolean",
+              "description": "True when no single component both proposed the change under review and applied or graded it."
+            },
+            "review_feedback": {
+              "type": "string",
+              "enum": [
+                "opaque",
+                "generic-reject",
+                "detailed"
+              ],
+              "description": "How much iterative judge or panel feedback the agent saw across attempts."
+            },
+            "mechanical_override": {
+              "type": "boolean",
+              "description": "True when a judged PASS was overridden because deterministic integrity checks failed."
+            }
+          }
         }
       }
     },
