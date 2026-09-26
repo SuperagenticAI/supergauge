@@ -52,6 +52,7 @@ SuperGauge is designed to sit above these, not to replace any of them.
 | Where to fix | HarnessX D1–D9 | Orthogonal. SuperGauge measures say *how good*; D1–D9 says *where to change it*. A record may carry a D-tag as advisory |
 | Agent discovery | A2A Agent Card | `subject.agent_card` may bind the well-known card digest and skill allowlist; see [`rfcs/0002-a2a-agent-card-binding.md`](rfcs/0002-a2a-agent-card-binding.md) (draft) |
 | Supply-chain attestation | CycloneDX AIBOM, SLSA / in-toto | Optional `supply_chain` carries BOM and provenance digests; see [`rfcs/0003-supply-chain-aibom-slsa.md`](rfcs/0003-supply-chain-aibom-slsa.md) (draft) |
+| Assurance export | AIUC-1, EU AI Act Art. 50 | Optional `export.profiles[]` maps existing AQR evidence to external controls; no new scoring. See [`packs/assurance-export.md`](packs/assurance-export.md) |
 | Typed decision models | TypeSafe AI Jev (System One) | Emitters MAY pin System One judge fields and map Score/Noul to judged measures; soft hold is emitter policy. SuperGauge does not host or call Jev; see [`rfcs/0004-jev-systemone-interop.md`](rfcs/0004-jev-systemone-interop.md) (draft) |
 
 Three positions this specification shares with the wider field, and claims no
@@ -263,6 +264,34 @@ expects a present AIBOM digest covering models and tools in scope; L4 expects
 signed BOM and provenance that an independent party can verify. See
 [`rfcs/0003-supply-chain-aibom-slsa.md`](rfcs/0003-supply-chain-aibom-slsa.md)
 (draft).
+
+### 2.10 Optional `export`
+
+Emitters MAY record which external assurance or transparency **export profiles**
+they mapped this AQR against. Export profiles are checklists over existing
+evidence. They MUST NOT introduce an aggregate score or replace deterministic
+gates (see §4.2 and [`packs/assurance-export.md`](packs/assurance-export.md)).
+
+```yaml
+export:
+  profiles:
+    - id: sg/aiuc-1
+      version: "0.1"
+      standard_cut: "2026-07-15"
+      controls: [A008, B010, B006.1, B006.3]
+    - id: sg/eu-art50
+      version: "0.1"
+      controls: ["art50.disclosure", "art50.m2m-exception"]
+```
+
+| Field | Meaning |
+|---|---|
+| `profiles[].id` | Pack id under `packs/` (for example `sg/aiuc-1`, `sg/eu-art50`) |
+| `profiles[].version` | Pack version claimed |
+| `profiles[].standard_cut` | OPTIONAL external standard cut date (AIUC-1 quarterly cuts) |
+| `profiles[].controls` | OPTIONAL list of control ids or exporter-local checklist labels covered by evidence on this record |
+
+See [`packs/aiuc-1.md`](packs/aiuc-1.md) and [`packs/eu-art50.md`](packs/eu-art50.md).
 
 ---
 

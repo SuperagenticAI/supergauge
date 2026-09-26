@@ -43,6 +43,9 @@ it into evidence.
 
 `examples/l4-passing.yaml` reaches L4.
 
+`examples/l2-assurance-export.yaml` shows optional `export.profiles[]`
+metadata for AIUC-1 and EU Art. 50 mappings (not scores).
+
 `examples/l1-only.yaml` is structurally reasonable and fails everything above
 L1, on purpose. It carries an unsealed split with no probes, uses the
 model-graded `answer.grounded` as a gate, and claims a ship verdict over a

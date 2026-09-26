@@ -134,7 +134,7 @@ python conformance/check.py record.yaml --level L2
 | [`schema/`](schema) | JSON Schema for validators |
 | [`measures/`](measures) | The open registry, and the main place to contribute |
 | [`profiles/`](profiles) | Domain bundles that set tiers and thresholds |
-| [`packs/`](packs) | Adversarial and fault-injection case sets |
+| [`packs/`](packs) | Adversarial case sets and assurance export profiles (AIUC-1, EU Art. 50) |
 | [`conformance/`](conformance) | The L1 to L4 suite |
 | [`rfcs/`](rfcs) | Proposals |
 | [`docs/emitters/`](docs/emitters) | Peer-tool emit guides |
@@ -160,6 +160,10 @@ SuperGauge does not replace your evaluation runner.
   judged Score/Noul mapping, and soft `decision.hold` when confidence is low, in
   [`rfcs/0004-jev-systemone-interop.md`](rfcs/0004-jev-systemone-interop.md).
   SuperGauge does not host or call Jev.
+- **Assurance export:** map existing AQR evidence to AIUC-1 (A008 / B010 / B006)
+  and EU Art. 50 transparency checklists via
+  [`packs/assurance-export.md`](packs/assurance-export.md). Export profiles are
+  not scores and do not replace deterministic gates.
 - Judged peer scores may be recorded; only deterministic measures may gate.
 
 ## Contributing
