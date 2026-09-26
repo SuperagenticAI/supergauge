@@ -85,3 +85,23 @@ gates from the referenced ledger
 `reliability.pass_hat_k`, `answer.grounded`,
 `efficiency.cost_per_success`, `efficiency.latency_per_success`,
 `efficiency.tokens_per_success`, `assurance.evidence_complete`.
+
+## Test integrity (RFC 0005)
+
+When LangSmith (or an attached hermetic harness) already holds integrity facts,
+map them into optional `assurance.integrity`. SuperGauge does not run the eval.
+
+| LangSmith / harness fact | AQR field |
+|---|---|
+| Graders and answer keys outside the agent write scope | `integrity.metric_custody: external` |
+| Independent recompute of held-out metrics | `integrity.recompute_digest` (+ optional `recompute_party`) |
+| Dataset canaries / impossible probes | `task_set.canary_ids` plus `integrity.canaries[]` outcomes |
+| Sandbox without grader-secret exfil | `integrity.hermetic_workspace` |
+| Separate propose vs grade identities | `integrity.capability_disjoint_roles` |
+| Iterative LLM-reviewer feedback shown to the agent | `integrity.review_feedback` (`opaque` / `generic-reject` / `detailed`) |
+| Judged PASS discarded after integrity fail | `integrity.mechanical_override: true` and `decision.verdict` `hold`/`reject` |
+
+Judged LangSmith feedback scores stay out of `gates[]`. Detailed review feedback
+across retries SHOULD soft-hold. See
+[`rfcs/0005-test-integrity-reward-hack.md`](../../rfcs/0005-test-integrity-reward-hack.md).
+

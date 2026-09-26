@@ -84,3 +84,22 @@ documented format).
 `reliability.pass_hat_k`, `answer.grounded`,
 `efficiency.tokens_per_success`, `efficiency.latency_per_success`,
 `assurance.evidence_complete`.
+
+## Test integrity (RFC 0005)
+
+Map Inspect (or companion harness) integrity facts into optional
+`assurance.integrity`. Inspect remains the runner.
+
+| Inspect / harness fact | AQR field |
+|---|---|
+| Programmatic scorers and targets outside agent write scope | `integrity.metric_custody: external` |
+| Third-party recompute of gated scores | `integrity.recompute_digest` |
+| Unpassable / contamination samples | `task_set.canary_ids` + `integrity.canaries[]` |
+| Isolated sandbox / no answer-key path | `integrity.hermetic_workspace` |
+| Optimizer role cannot apply grades | `integrity.capability_disjoint_roles` |
+| Model-graded scorer feedback looped to the agent | `integrity.review_feedback` |
+| Mechanical rejection of a model-graded PASS | `integrity.mechanical_override` + soft `hold`/`reject` |
+
+Model-graded Inspect scorers remain judged and must not gate. See
+[`rfcs/0005-test-integrity-reward-hack.md`](../../rfcs/0005-test-integrity-reward-hack.md).
+

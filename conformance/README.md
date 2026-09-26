@@ -43,6 +43,10 @@ it into evidence.
 
 `examples/l4-passing.yaml` reaches L4.
 
+`examples/l3-integrity-soft-hold.yaml` is an L3-shaped soft-hold with
+optional `assurance.integrity` (RFC 0005): deterministic gates pass,
+judged evidence stays non-gating, and detailed review feedback triggers hold.
+
 `examples/l2-assurance-export.yaml` shows optional `export.profiles[]`
 metadata for AIUC-1 and EU Art. 50 mappings (not scores).
 

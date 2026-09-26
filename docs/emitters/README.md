@@ -15,6 +15,9 @@ afterward.
    [`rfcs/0001-otel-evidence-mapping.md`](../../rfcs/0001-otel-evidence-mapping.md).
 4. Enforce gates only with **deterministic** measures. Judged scores may be
    recorded; they must not back a gate (SPEC §4.1).
+5. When claiming resistance to reward hacking, map integrity facts into
+   optional `assurance.integrity` per
+   [`rfcs/0005-test-integrity-reward-hack.md`](../../rfcs/0005-test-integrity-reward-hack.md).
 
 Conformance stays self-asserted. After you emit, run:
 

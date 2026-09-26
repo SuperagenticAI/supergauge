@@ -54,6 +54,7 @@ SuperGauge is designed to sit above these, not to replace any of them.
 | Supply-chain attestation | CycloneDX AIBOM, SLSA / in-toto | Optional `supply_chain` carries BOM and provenance digests; see [`rfcs/0003-supply-chain-aibom-slsa.md`](rfcs/0003-supply-chain-aibom-slsa.md) (draft) |
 | Assurance export | AIUC-1, EU AI Act Art. 50 | Optional `export.profiles[]` maps existing AQR evidence to external controls; no new scoring. See [`packs/assurance-export.md`](packs/assurance-export.md) |
 | Typed decision models | TypeSafe AI Jev (System One) | Emitters MAY pin System One judge fields and map Score/Noul to judged measures; soft hold is emitter policy. SuperGauge does not host or call Jev; see [`rfcs/0004-jev-systemone-interop.md`](rfcs/0004-jev-systemone-interop.md) (draft) |
+| Test integrity / judge demotion | Reward-hack evidence, PROCTOR-style guardrails | Optional `assurance.integrity` records metric custody, recompute, canaries, hermetic roles, and mechanical override of judged PASS; judged evidence stays soft-hold only. See [`rfcs/0005-test-integrity-reward-hack.md`](rfcs/0005-test-integrity-reward-hack.md) (draft) |
 
 Three positions this specification shares with the wider field, and claims no
 credit for: the party proposing a change must not grade it; a model
@@ -204,6 +205,12 @@ assurance:
     events: 4182
     replayable: true
   evaluator_independent: true
+  integrity:                          # OPTIONAL: test integrity / reward-hack evidence
+    metric_custody: external
+    recompute_digest: sha256:aa11...
+    hermetic_workspace: true
+    review_feedback: opaque
+    mechanical_override: false
 ```
 
 `evaluator_independent` asserts that whatever graded this run had access to the
@@ -221,6 +228,16 @@ and Noul values remain judged or probabilistic signals: they MUST NOT alone
 hard-gate `ship` (see §4.1). Emitters MAY record a soft `decision.hold` when
 confidence is low while deterministic gates stay independent. See
 [`rfcs/0004-jev-systemone-interop.md`](rfcs/0004-jev-systemone-interop.md)
+(draft).
+
+Emitters MAY additionally populate optional `assurance.integrity` when the run
+claims resistance to reward hacking or evaluator gaming: metric custody outside
+the agent, independent held-out recompute digests, protected metric ids, canary
+outcomes (including unpassable cases), hermetic workspace / capability-disjoint
+roles, review-feedback opacity, and `mechanical_override` when a judged PASS was
+discarded because deterministic integrity failed. Judged integrity opinions
+remain soft-hold / escalate only. See
+[`rfcs/0005-test-integrity-reward-hack.md`](rfcs/0005-test-integrity-reward-hack.md)
 (draft).
 
 ### 2.8 `decision`
@@ -344,6 +361,15 @@ and `GOVERNANCE.md`.
 >
 > A record whose `task_set.sealed` is false, or whose canary probes fired, MUST
 > NOT carry `verdict: ship` at any measured value.
+>
+> When deterministic integrity evidence fails (for example an unpassable canary
+> observed as pass, a recompute attestation that does not verify, or
+> `metric_custody` that leaves gated oracles agent-writable), the record MUST
+> NOT carry `verdict: ship`, even if a judged measure reported PASS. Emitters
+> SHOULD set `assurance.integrity.mechanical_override: true` when discarding a
+> judged PASS for that reason. See
+> [`rfcs/0005-test-integrity-reward-hack.md`](rfcs/0005-test-integrity-reward-hack.md)
+> (draft).
 
 ### 4.2 No single score
 
@@ -460,9 +486,11 @@ Related draft bindings outside the ledger itself:
 [`rfcs/0002-a2a-agent-card-binding.md`](rfcs/0002-a2a-agent-card-binding.md)
 (Agent Card under `subject`),
 [`rfcs/0003-supply-chain-aibom-slsa.md`](rfcs/0003-supply-chain-aibom-slsa.md)
-(optional `supply_chain` digests), and
+(optional `supply_chain` digests),
 [`rfcs/0004-jev-systemone-interop.md`](rfcs/0004-jev-systemone-interop.md)
-(Jev / System One assurance pinning and soft hold).
+(Jev / System One assurance pinning and soft hold), and
+[`rfcs/0005-test-integrity-reward-hack.md`](rfcs/0005-test-integrity-reward-hack.md)
+(test integrity / reward-hack evidence and judge demotion).
 
 ---
 

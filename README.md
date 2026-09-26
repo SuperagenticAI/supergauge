@@ -160,6 +160,10 @@ SuperGauge does not replace your evaluation runner.
   judged Score/Noul mapping, and soft `decision.hold` when confidence is low, in
   [`rfcs/0004-jev-systemone-interop.md`](rfcs/0004-jev-systemone-interop.md).
   SuperGauge does not host or call Jev.
+- **Test integrity:** metric custody, independent recompute, canaries, hermetic
+  roles, and mechanical override of judged PASS when integrity fails, in
+  [`rfcs/0005-test-integrity-reward-hack.md`](rfcs/0005-test-integrity-reward-hack.md).
+  Judged evidence remains soft-hold only; SuperGauge is not an eval runner.
 - **Assurance export:** map existing AQR evidence to AIUC-1 (A008 / B010 / B006)
   and EU Art. 50 transparency checklists via
   [`packs/assurance-export.md`](packs/assurance-export.md). Export profiles are
