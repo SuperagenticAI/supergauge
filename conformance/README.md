@@ -23,7 +23,7 @@ L1 result.
 | **L3** | `reliability.pass_hat_k` reported with k of at least 2; `evaluator_independent` asserted; where any measure is model-graded, a judge record pinning an id, a model and a human agreement statistic |
 | **L4** | Signed, a rollback target recorded, and a referenced ledger marked replayable with an event count |
 
-## What it deliberately does not check
+## Evidence verification
 
 The suite reads a record. It cannot see the run behind it, so several claims are
 taken at face value and are only meaningful because a third party can go and
@@ -35,9 +35,11 @@ verify them against the ledger:
 - Whether the ledger reproduces the verdict. L4 checks that a replayable ledger
   is referenced, and replaying it is the reader's job.
 
-This is the point of L4, and not a gap in it. A record is an assertion, and
-an immutable assertion is still an assertion. Independent replay is what turns
-it into evidence.
+The L4 checks inspect the signature and ledger fields. Signature verification
+and independent replay require access to keys and the referenced evidence.
+The checker compares recorded minimum floors with their matching measures.
+Profile completeness and recomputation from the evidence remain the work of
+the release policy and evidence reviewer.
 
 ## Examples
 
@@ -59,8 +61,24 @@ checker.
 ## In CI
 
 ```yaml
-- run: python conformance/check.py "$RECORD" --level L2 --quiet
+- run: python conformance/check.py "$RECORD" --level L2 --require-ship --quiet
 ```
 
 Pick the level your profile requires. `--quiet` suppresses the report and
-leaves only the exit code.
+leaves only the exit code. `--require-ship` requires at least L2, a recorded
+ship verdict, a named actor and passing gates. A hold or reject record can meet
+a conformance level while still blocking deployment.
+
+The release system must authenticate the approver, bind the record to the
+candidate artifact, enforce its profile, and verify the required evidence.
+The actor field records an identity; the checker cannot authenticate it.
+
+## Regression cases
+
+```bash
+python -m unittest discover -s conformance -p 'test_*.py'
+```
+
+`fixtures/release-policy.json` contains nine synthetic records covering ship,
+hold, rejection, gate failures, sealing, probes, actor identity and recorded
+floors. The test checks conformance and the deployment exit code separately.

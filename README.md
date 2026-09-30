@@ -123,8 +123,16 @@ endorsement would quietly remove.
 
 ```bash
 pip install pyyaml jsonschema
-python conformance/check.py record.yaml --level L2
+python conformance/check.py record.yaml --level L2 --require-ship
 ```
+
+`--level` checks conformance. `--require-ship` also requires a recorded ship
+decision, a named actor and passing gates, with L2 as the minimum. The release
+system authenticates the approver and binds the record to the candidate.
+
+For an existing evaluation stack, start with the
+[adoption guide](docs/adoption.md). SuperOptiX supplies an evaluation and
+optimization workflow; SuperQode supplies the coding-agent harness path.
 
 ## Repository layout
 
