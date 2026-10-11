@@ -8,7 +8,13 @@ pip install pyyaml jsonschema
 
 python conformance/check.py path/to/record.yaml
 python conformance/check.py path/to/record.yaml --level L2   # exit 1 below L2
+python conformance/check.py path/to/record.yaml --level L2 --require-ship
+                                         # exit 2 unless decision.verdict is ship
 ```
+
+Exit codes: `0` met, `1` below the requested `--level`, `2` verdict is not
+`ship` under `--require-ship`. `--require-ship` is checked first, so a hold
+record exits `2` even when it also falls below the level.
 
 `jsonschema` is optional. Without it the L1 check falls back to verifying that
 the eight required blocks are present, which is weaker; install it for a full
@@ -50,6 +56,13 @@ judged evidence stays non-gating, and detailed review feedback triggers hold.
 `examples/l2-assurance-export.yaml` shows optional `export.profiles[]`
 metadata for AIUC-1 and EU Art. 50 mappings (not scores).
 
+`examples/l3-superoptix-hardened-ship.yaml` is a hardened L2 track that
+ships: deterministic gates on `output.parse_rate`,
+`reliability.beats_trivial_baseline`, `reliability.pass_hat_k`,
+`trajectory.valid` and `tool.correctness`, with Jev recorded as an advisory
+judge carrying `assurance.judge.calibration`. It passes
+`--level L2 --require-ship`.
+
 `examples/l1-only.yaml` is structurally reasonable and fails everything above
 L1, on purpose. It carries an unsealed split with no probes, uses the
 model-graded `answer.grounded` as a gate, and claims a ship verdict over a
@@ -64,3 +77,54 @@ checker.
 
 Pick the level your profile requires. `--quiet` suppresses the report and
 leaves only the exit code.
+
+To fail the job on anything but a ship decision:
+
+```yaml
+- run: python conformance/check.py "$RECORD" --level L2 --require-ship --quiet
+```
+
+## Pinning the checker
+
+SuperGauge ships no package. Pin the checker by commit SHA (or, once
+published, by an annotated tag such as `checker-v0.1.0`) and fetch it with the
+schema and the measure registry beside it. `check.py` resolves
+`../schema/agent-quality-record.schema.json` and `../measures/` relative to
+itself; without them L1 falls back to a presence check and the judged set falls
+back to a built-in floor.
+
+Sparse checkout at a pinned revision (recommended):
+
+```bash
+SG_REV=<commit-sha-or-tag>
+git clone --filter=blob:none --no-checkout https://github.com/SuperagenticAI/supergauge .supergauge
+git -C .supergauge sparse-checkout set conformance schema measures
+git -C .supergauge checkout "$SG_REV"
+pip install pyyaml jsonschema
+python .supergauge/conformance/check.py "$RECORD" --level L2 --require-ship
+```
+
+Raw files at a pinned SHA (no git needed):
+
+```bash
+SG_SHA=<full-commit-sha>
+base=https://raw.githubusercontent.com/SuperagenticAI/supergauge/$SG_SHA
+mkdir -p .supergauge/conformance .supergauge/schema
+curl -fsSL "$base/conformance/check.py" -o .supergauge/conformance/check.py
+curl -fsSL "$base/schema/agent-quality-record.schema.json" \
+  -o .supergauge/schema/agent-quality-record.schema.json
+```
+
+This copy omits `measures/`, so the judged set uses the built-in floor and the
+unregistered-measure note is skipped. Prefer the sparse checkout when you rely
+on newly registered measures.
+
+Or a git submodule pinned to the same revision:
+
+```bash
+git submodule add https://github.com/SuperagenticAI/supergauge third_party/supergauge
+git -C third_party/supergauge checkout <commit-sha-or-tag>
+```
+
+A full SHA is immutable and is the strongest pin. Tags are convenient but can
+be moved; if you pin a tag, record the SHA it resolved to alongside it.

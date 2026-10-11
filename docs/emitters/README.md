@@ -35,6 +35,7 @@ python conformance/check.py record.yaml --level L1
 | Inspect AI | [`inspect.md`](inspect.md) | `.eval` / JSON eval logs (`EvalLog`) |
 | Jev / System One | [`jev-systemone.md`](jev-systemone.md) | Versioned model id, pack digest, Score/Noul/Choice answers, confidence |
 | SuperQode | [`superqode.md`](superqode.md) | Harness-protocol ledger, SystemOne tool_gate / rubric grades, promotion state |
+| A2A Agent Card (any emitter, e.g. SuperOptiX) | [`a2a-agent-card.md`](a2a-agent-card.md) | Reviewed card bytes, served well-known card, skill allowlist |
 
 ## Measure ids
 
@@ -51,7 +52,7 @@ SuperGauge.
 | Already held | Write into |
 |---|---|
 | Published Agent Card JSON (or its content hash) | `subject.agent_card.well_known_url`, `card_digest`, optional `version` / `etag` / `skill_ids` |
-| Card freshness check at emission | `measures[]` / optional `gates[]` entry for `interop.agent_card_fresh` |
+| Card freshness check at emission | `measures[]` / optional `gates[]` entry for `interop.agent_card_fresh` (see [`a2a-agent-card.md`](a2a-agent-card.md)) |
 | CycloneDX ML-BOM / AIBOM document | `supply_chain.aibom_digest` (optional `aibom_format`) |
 | SLSA or in-toto attestation | `supply_chain.slsa_provenance_digest` (optional `provenance_format`) |
 | MCP servers configured for the run | `supply_chain.mcp_servers[]` with name and digests |
@@ -69,7 +70,7 @@ optional `pack_digest`; map Score/Noul to judged measures; use soft
 
 | Kind | May gate? | Examples in the registry |
 |---|---|---|
-| Deterministic | Yes | `task.completion`, `tool.correctness`, `trajectory.valid`, `reliability.pass_hat_k`, `policy.hard_rules`, `safety.injection_resistance`, `interop.agent_card_fresh` |
+| Deterministic | Yes | `task.completion`, `tool.correctness`, `trajectory.valid`, `reliability.pass_hat_k`, `output.parse_rate`, `reliability.beats_trivial_baseline`, `policy.hard_rules`, `safety.injection_resistance`, `interop.agent_card_fresh` |
 | Judged | No | `answer.grounded`, System One Score/Noul grades |
 
 A peer "LLM-as-judge" or rubric score maps to a judged measure (or to

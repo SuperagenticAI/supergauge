@@ -199,6 +199,12 @@ assurance:
     human_agreement_kappa: 0.71
     sampled: 40
     calibration_ece: 0.08             # OPTIONAL: Expected Calibration Error when measured
+    calibration:                      # OPTIONAL: how the judge was calibrated
+      method: reanchor
+      params: {anchors: [0.2, 0.5, 0.8], temperature: 1.3}
+      params_digest: sha256:9e8d...
+      fold: {id: calib-fold-1, n: 40, ece: 0.05, agreement_with_human: 0.74}
+      calibrated_at: "2026-10-10T17:00:00Z"
   evidence:
     ledger: .superqode/harness-protocol/
     format: superqode.harness-protocol/1     # or opentelemetry/1.x
@@ -223,7 +229,13 @@ in production coding-agent sessions.
 `judge` MAY be omitted when a record contains no judged measures. When the judge
 is a System One model such as Jev, `model` SHOULD be a versioned id (for
 example `jev-1.13.0`), and `pack_digest` SHOULD fingerprint the question pack
-used for those answers. `calibration_ece` is optional. Raw confidence, Score,
+used for those answers. `calibration_ece` is optional. `calibration` is
+optional and describes how the judge was calibrated (`method`, fitted `params`
+and their `params_digest`, the calibration `fold` with its size, `ece` and
+`agreement_with_human`, and `calibrated_at`). When both are present,
+`calibration_ece` SHOULD equal `calibration.fold.ece`. The calibration fold MUST
+NOT overlap the sealed held-out split. Calibration metadata is descriptive: it
+never makes judged evidence gate-eligible. Raw confidence, Score,
 and Noul values remain judged or probabilistic signals: they MUST NOT alone
 hard-gate `ship` (see §4.1). Emitters MAY record a soft `decision.hold` when
 confidence is low while deterministic gates stay independent. See
@@ -334,13 +346,13 @@ group that describes the trustworthiness of the measurement itself.
 
 | Group | Measures |
 |---|---|
-| Effectiveness | `task.completion` · `trajectory.valid` · `tool.correctness` · `interop.routing_invocation` · `interop.agent_card_fresh` · `answer.grounded` (judged) |
+| Effectiveness | `task.completion` · `trajectory.valid` · `tool.correctness` · `output.parse_rate` · `interop.routing_invocation` · `interop.agent_card_fresh` · `answer.grounded` (judged) |
 | Efficiency | `efficiency.cost_per_success` · `efficiency.tokens_per_success` · `efficiency.latency_per_success` |
-| Robustness | `reliability.pass_hat_k` · `reliability.pass_at_k` · `robustness.recovery` · `robustness.multi_turn` (judged) |
+| Robustness | `reliability.pass_hat_k` · `reliability.pass_at_k` · `reliability.beats_trivial_baseline` · `robustness.recovery` · `robustness.multi_turn` (judged) |
 | Safety | `policy.hard_rules` · `safety.injection_resistance` · `safety.tool_abuse` · `safety.isolation` |
 | Assurance | `assurance.judge_agreement` · `assurance.holdout_sealed` · `assurance.evidence_complete` · `assurance.evaluator_independence` |
 
-Twenty-one measures, nineteen of them deterministic. That ratio is not a
+Twenty-three measures, twenty-one of them deterministic. That ratio is not a
 position this
 specification argues for; it reflects an existing consensus that most agent
 correctness is checkable without a model in the loop.

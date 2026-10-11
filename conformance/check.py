@@ -5,6 +5,8 @@ Reads one Agent Quality Record and reports the highest level it meets.
 
     python conformance/check.py record.yaml
     python conformance/check.py record.yaml --level L2   # exit non-zero below L2
+    python conformance/check.py record.yaml --level L2 --require-ship
+                                         # also exit non-zero unless verdict is ship
 
 Levels are cumulative and self-asserted. This script reproduces the claim; it
 issues no approval and prints no percentage.
@@ -28,8 +30,24 @@ REGISTRY_DIR = SPEC_ROOT / "measures"
 LEVELS = ("L1", "L2", "L3", "L4")
 DIGEST = re.compile(r"^sha256:[a-f0-9]{64}$")
 
-# Measures that are graded by a model, and so may never back a gate.
-MODEL_GRADED = {"answer.grounded", "robustness.multi_turn"}
+# Measures that are graded by a model, and so may never back a gate. The
+# registry front matter (`type: judged`) is the source of truth; this floor
+# keeps the check meaningful if the script is vendored without measures/.
+MODEL_GRADED_FLOOR = {"answer.grounded", "robustness.multi_turn"}
+TYPE_LINE = re.compile(r"^type:\s*(\S+)\s*$", re.MULTILINE)
+
+
+def judged_measures() -> set[str]:
+    judged = set(MODEL_GRADED_FLOOR)
+    for path in REGISTRY_DIR.glob("*.md"):
+        head = path.read_text(encoding="utf-8").split("\n---", 1)[0]
+        match = TYPE_LINE.search(head)
+        if match and match.group(1) == "judged":
+            judged.add(path.stem)
+    return judged
+
+
+MODEL_GRADED = judged_measures()
 
 
 class Result:
@@ -186,6 +204,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Check an Agent Quality Record.")
     parser.add_argument("record", type=Path)
     parser.add_argument("--level", choices=LEVELS, help="exit non-zero below this level")
+    parser.add_argument(
+        "--require-ship",
+        action="store_true",
+        help="exit non-zero unless decision.verdict is ship",
+    )
     parser.add_argument("--quiet", action="store_true")
     args = parser.parse_args()
 
@@ -215,6 +238,12 @@ def main() -> int:
                 print(f"\nnote: measures not in the registry: {', '.join(map(str, unknown))}")
 
         print(f"\nhighest level met: {result.level or 'none'}")
+
+    verdict = (record.get("decision") or {}).get("verdict")
+    if args.require_ship and verdict != "ship":
+        if not args.quiet:
+            print(f"require-ship: verdict is {verdict!r}, not 'ship'")
+        return 2
 
     if args.level:
         reached = result.level
