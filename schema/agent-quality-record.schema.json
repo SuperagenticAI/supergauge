@@ -256,6 +256,44 @@
             "description": "Versioned pack that produced this value, as <pack>@<version>.",
             "type": "string",
             "pattern": "^[a-z0-9]+(?:[-/][a-z0-9._-]+)*@[0-9]+\\.[0-9]+$"
+          },
+          "schema_digest": {
+            "$ref": "#/$defs/digest",
+            "description": "Optional digest of the declared output contract. See measures/output.parse_rate.md."
+          },
+          "baseline": {
+            "description": "Declared trivial baseline for a comparison measure. See measures/reliability.beats_trivial_baseline.md.",
+            "type": "object",
+            "required": [
+              "id",
+              "value"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "value": {
+                "type": [
+                  "number",
+                  "boolean"
+                ]
+              },
+              "measure": {
+                "$ref": "#/$defs/measureId"
+              },
+              "candidate_value": {
+                "type": [
+                  "number",
+                  "boolean"
+                ]
+              },
+              "margin": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
           }
         },
         "allOf": [
@@ -277,6 +315,24 @@
             "then": {
               "required": [
                 "k"
+              ]
+            }
+          },
+          {
+            "description": "A trivial-baseline comparison is meaningless without the baseline it compared against.",
+            "if": {
+              "properties": {
+                "id": {
+                  "const": "reliability.beats_trivial_baseline"
+                }
+              },
+              "required": [
+                "id"
+              ]
+            },
+            "then": {
+              "required": [
+                "baseline"
               ]
             }
           }
@@ -366,6 +422,64 @@
               "minimum": 0,
               "maximum": 1,
               "description": "Optional Expected Calibration Error (or documented calibration summary in [0, 1]) for the pinned judge when measured."
+            },
+            "calibration": {
+              "description": "Optional calibration metadata for the pinned judge (for example Jev ReAnchor). Descriptive only: it never makes judged evidence gate-eligible. See rfcs/0004-jev-systemone-interop.md.",
+              "type": "object",
+              "required": [
+                "method"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "method": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Calibration method id, for example reanchor."
+                },
+                "params": {
+                  "type": "object",
+                  "description": "Method parameters as fitted, for example ReAnchor anchors and temperature."
+                },
+                "params_digest": {
+                  "$ref": "#/$defs/digest",
+                  "description": "Digest of the canonical JSON serialization of params, or of the fitted calibrator artifact."
+                },
+                "fold": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "n"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "Id of the calibration fold. MUST NOT overlap the sealed held-out split."
+                    },
+                    "n": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "ece": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1,
+                      "description": "Expected Calibration Error on the fold after calibration."
+                    },
+                    "agreement_with_human": {
+                      "type": "number",
+                      "minimum": -1,
+                      "maximum": 1,
+                      "description": "Agreement statistic (Cohen's kappa) between calibrated judge and human labels on the fold."
+                    }
+                  }
+                },
+                "calibrated_at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
             }
           }
         },

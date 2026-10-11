@@ -103,6 +103,39 @@ assurance:
 | `judge.sampled` | with kappa | Sample size for that study |
 | `judge.calibration_ece` | optional | ECE or a documented calibration summary in `[0, 1]` when the emitter measured it |
 
+##### Optional calibration metadata (ReAnchor and similar)
+
+When the emitter calibrated the judge (for example Jev ReAnchor), it MAY
+record how, under `assurance.judge.calibration`:
+
+```yaml
+assurance:
+  judge:
+    id: typesafe/jev@1
+    model: jev-1.13.0
+    calibration_ece: 0.05
+    calibration:
+      method: reanchor                       # REQUIRED within calibration
+      params: {anchors: [0.2, 0.5, 0.8], temperature: 1.3}
+      params_digest: sha256:...              # digest of canonical params JSON or calibrator artifact
+      fold: {id: calib-fold-1, n: 40, ece: 0.05, agreement_with_human: 0.74}
+      calibrated_at: "2026-10-10T17:00:00Z"
+```
+
+| Field | Meaning |
+|---|---|
+| `calibration.method` | Required within the object. Method id, for example `reanchor` |
+| `calibration.params` | Fitted parameters as an object |
+| `calibration.params_digest` | `sha256:` of the canonical params JSON or the calibrator artifact |
+| `calibration.fold` | `id` and `n` required; optional `ece` in `[0, 1]` and `agreement_with_human` (kappa, `[-1, 1]`) |
+| `calibration.calibrated_at` | RFC 3339 timestamp of the fit |
+
+`calibration_ece` stays where it is and keeps its meaning; when both are
+present it SHOULD equal `calibration.fold.ece`. The fold MUST NOT overlap the
+sealed held-out split. Calibration metadata is descriptive only: a calibrated
+confidence is still judged evidence, MAY support a soft `decision.hold`, and
+MUST NOT back a gate or alone permit `ship`.
+
 `pack_digest` MUST hash the pack bytes used for the measured runs, not a
 description of intent (SPEC §7). SuperQode already records pack hashes on
 decision traces; emit that value.
