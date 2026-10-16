@@ -3,17 +3,18 @@ id: sg/aiuc-1
 version: "0.1"
 status: draft
 kind: export-profile
-maps_to: AIUC-1 Q3 2026-07-15
-standard_cut: "2026-07-15"
-next_cut: "2026-10-15"
+maps_to: AIUC-1 Q4 2026-10-15
+standard_cut: "2026-10-15"
+next_cut: "2027-01-15"
 ---
 
 # `sg/aiuc-1@0.1`
 
 Export mapping from Agent Quality Record evidence onto selected **AIUC-1**
-controls, especially coding-agent requirements from the Q3 2026-07-15 standard
-cut. AIUC-1 updates quarterly (next cut **2026-10-15**); pin the cut you mapped
-against on the record.
+controls, especially coding-agent requirements. Revalidated against the Q4
+2026-10-15 standard cut (coding-agent controls A008 / B010 / B006.1 / B006.3
+unchanged from Q3). AIUC-1 updates quarterly (next cut **2027-01-15**); pin the
+cut you mapped against on the record.
 
 Peer references:
 [AIUC-1 changelog](https://www.aiuc-1.com/changelog),
@@ -47,7 +48,7 @@ export:
   profiles:
     - id: sg/aiuc-1
       version: "0.1"
-      standard_cut: "2026-07-15"
+      standard_cut: "2026-10-15"
       controls: [A008, B010, B006.1, B006.3]
 ```
 
@@ -59,10 +60,13 @@ not "certified."
 | Cut | Notes |
 |---|---|
 | 2026-07-15 (Q3) | Coding-agent A008 / B010 added; B006.3 broadened to agent-executed code and MCP |
-| 2026-10-15 (next) | Remap this pack when the public changelog publishes; bump pack minor or add a new cut field |
+| 2026-10-15 (Q4) | Revalidated: A008 / B010 / B006.1 / B006.3 text unchanged. Q4 adds open-weight and per-principle third-party testing (A009, B001 rename, C010, D004, E018, plus C002.4 / E006.2 / F001.3); those stay out of this coding-agent pack until a later additive map |
+| 2027-01-15 (next) | Remap this pack when the public changelog publishes; bump pack minor or add a new cut field |
 
 ## Out of scope
 
 - Performing AIUC-1 audits or issuing certificates.
 - Hosting AIUC evidence templates beyond AQR pointers.
 - Aggregate control scores.
+- Mapping Q4 open-weight or third-party testing requirements (A009, E018, C002.4,
+  E006.2, F001.3, and renamed B001 / C010 / D004) in this coding-agent pack.

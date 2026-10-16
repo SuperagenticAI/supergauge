@@ -18,7 +18,7 @@ external profile. SuperGauge remains a release-decision protocol.
 
 | Pack | External programme | File |
 |---|---|---|
-| `sg/aiuc-1` | AIUC-1 (Q3 cut 2026-07-15; next cut 2026-10-15) | [`aiuc-1.md`](aiuc-1.md) |
+| `sg/aiuc-1` | AIUC-1 (Q4 cut 2026-10-15; next cut 2027-01-15) | [`aiuc-1.md`](aiuc-1.md) |
 | `sg/eu-art50` | EU AI Act Article 50 transparency (agents FAQ) | [`eu-art50.md`](eu-art50.md) |
 
 ## How to use
