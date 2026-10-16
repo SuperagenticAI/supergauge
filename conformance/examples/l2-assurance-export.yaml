@@ -59,7 +59,7 @@ export:
   profiles:
     - id: sg/aiuc-1
       version: "0.1"
-      standard_cut: "2026-07-15"
+      standard_cut: "2026-10-15"
       controls: [A008, B010, B006.1, B006.3]
     - id: sg/eu-art50
       version: "0.1"
